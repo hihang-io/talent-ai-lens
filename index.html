@@ -1,0 +1,2589 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234f46e5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z'%3E%3C/path%3E%3Cpath d='M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z'%3E%3C/path%3E%3C/svg%3E" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talent AI Lens - Bộ lọc & Sàng lọc CV Cao Đẳng Việt Mỹ</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+
+  <!-- React & ReactDOM (Production) -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel Standalone (Transpile JSX in-browser) -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+  <script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+  </script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style type="text/css">
+    body {
+      background-color: #080c14;
+      color: #cbd5e1;
+      font-family: "Plus Jakarta Sans", sans-serif;
+      min-height: 100vh;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #475569;
+    }
+
+    /* Bento effects */
+    .bento-card {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .bento-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(99, 102, 241, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 1px 1px 0 rgba(99, 102, 241, 0.05) inset;
+    }
+
+    .glow-text-emerald {
+      text-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    }
+  </style>
+</head>
+<body class="bg-[#080c14] text-slate-300 antialiased min-h-screen">
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    // React SVG Icons (Self-contained)
+    const Sparkles = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>
+    );
+
+    const Settings = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+    );
+
+    const Key = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6"/><path d="m15.5 7.5 3 3L22 7l-3-3"/></svg>
+    );
+
+    const Users = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    );
+
+    const FileText = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+    );
+
+    const CheckCircle2 = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+    );
+
+    const XCircle = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+    );
+
+    const AlertCircle = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    );
+
+    const Layers = ({ className, style }) => (
+      <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-10 5 10 5 10-5-10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+    );
+
+    const RefreshCw = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>
+    );
+
+    const Plus = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    );
+
+    const Trash2 = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+    );
+
+    const Clock = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    );
+
+    const Upload = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+    );
+
+    const ThumbsUp = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h3l3.15-6.3a2.43 2.43 0 0 1 4.05 2.18Z"/></svg>
+    );
+
+    const ThumbsDown = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3l-3.15 6.3a2.43 2.43 0 0 1-4.05-2.18Z"/></svg>
+    );
+
+    const ShieldAlert = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+    );
+
+    const UserCheck = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+    );
+
+    const Github = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
+    );
+
+    const FolderPlus = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/><line x1="12" y1="10" x2="12" y2="16"/><line x1="9" y1="13" x2="15" y2="13"/></svg>
+    );
+
+    const FileSpreadsheet = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h2"/><path d="M8 17h2"/><path d="M14 13h2"/><path d="M14 17h2"/></svg>
+    );
+
+    const Download = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+    );
+
+    const UploadCloud = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m15 15-3-3-3 3"/></svg>
+    );
+
+    const Clipboard = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+    );
+
+    const Printer = ({ className }) => (
+      <svg className={className} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+    );
+
+    // Initial State values
+    const INITIAL_CRITERIA = [
+      { id: 'c1', name: 'Bachelor\'s Degree', description: 'Có bằng Cử nhân trở lên ngành Thiết kế Đồ họa, Mỹ thuật hoặc liên quan', isRequired: true, key: 'education' },
+      { id: 'c2', name: '1+ Years Graphic Design Exp', description: 'Có nhất 1 năm kinh nghiệm thực tế làm việc trong lĩnh vực Thiết kế', isRequired: true, key: 'experience' },
+      { id: 'c3', name: 'English Communication', description: 'Giao tiếp tốt tiếng Anh (viết & nói), ưu tiên môi trường đa văn hóa', isRequired: false, key: 'english' },
+      { id: 'c4', name: 'Onsite in Ho Chi Minh City', description: 'Sẵn sàng làm việc onsite 100% tại trường Cao đẳng Việt Mỹ cơ sở TP.HCM', isRequired: true, key: 'onsite' },
+      { id: 'c6', name: 'Valid Driver\'s License', description: 'Có bằng lái xe máy/ô tô hợp lệ', isRequired: true, key: 'driverLicense' },
+      { id: 'c7', name: 'Accept Background Check', description: 'Đồng ý kiểm tra lý lịch tư pháp trước khi nhận việc', isRequired: true, key: 'backgroundCheck' },
+      { id: 'c8', name: 'Accept Drug Test', description: 'Đồng ý kiểm tra sức khỏe và chất kích thích theo quy định', isRequired: true, key: 'drugTest' },
+      { id: 'c9', name: 'Can Start Immediately', description: 'Có thể nhận việc và đi làm ngay lập tức', isRequired: true, key: 'startImmediately' },
+      { id: 'c10', name: 'Teaching & Mentoring Skills', description: 'Kỹ năng sư phạm, truyền đạt và cố vấn sinh viên', isRequired: false, key: 'teaching' }
+    ];
+
+    const INITIAL_CANDIDATES = [
+      {
+        id: 'cand1',
+        name: 'Nguyễn Minh Tuấn',
+        avatar: '👨‍🏫',
+        matchRate: 96,
+        status: 'Passed',
+        role: 'Giảng viên Thiết kế Đồ họa',
+        nationality: 'Việt Nam',
+        education: 'Thạc sĩ Mỹ thuật công nghiệp, Cử nhân Thiết kế Đồ họa (Đại học Mỹ thuật TP.HCM)',
+        experience: '5 năm làm việc tại Ogilvy (Senior Designer) và VNG (Art Director)',
+        teaching: '3 năm giảng dạy thỉnh giảng tại Đại học Kiến trúc và hướng dẫn đồ án tốt nghiệp xuất sắc. Áp dụng Problem-Based Learning.',
+        english: 'IELTS 7.5 (Lưu loát cả văn bản lẫn thuyết trình)',
+        onsite: 'Có (Sẵn sàng làm việc onsite 100% tại TP.HCM)',
+        driverLicense: 'Có (Bằng lái xe máy hạng A1 và Ô tô hạng B2)',
+        backgroundCheck: 'Có (Đồng ý)',
+        drugTest: 'Có (Đồng ý)',
+        startImmediately: 'Có (Có thể bắt đầu ngay)',
+        toolsScore: 95,
+        teachScore: 90,
+        teamsScore: 95,
+        pros: [
+          'Bằng cấp cao học ngành Mỹ thuật chuyên sâu',
+          '5 năm kinh nghiệm thực chiến tại các Tập đoàn hàng đầu (Ogilvy, VNG)',
+          'Tiếng Anh IELTS 7.5 vượt trội',
+          'Đã có kinh nghiệm đứng lớp và áp dụng phương pháp Problem-based learning tốt',
+          'Đạt đầy đủ 10/10 tiêu chí sàng lọc (kể cả lý lịch, onsite và bằng lái)'
+        ],
+        cons: [],
+        summary: 'Ứng viên cực kỳ xuất sắc, đáp ứng vượt mong đợi toàn bộ các tiêu chí từ kỹ năng thực chiến đến nghiệp vụ sư phạm. Điểm tiếng Anh xuất sắc hỗ trợ môi trường đào tạo quốc tế của Cao đẳng Việt Mỹ.',
+        rawCVText: `NGUYỄN MINH TUẤN - CV GIẢNG VIÊN THIẾT KẾ ĐỒ HỌA\nEmail: tuan.nguyenminh@gmail.com | SĐT: 0908 123 456\nQuốc tịch: Việt Nam\n\nHỌC VẤN:\n- Thạc sĩ Mỹ thuật Công nghiệp - Đại học Mỹ thuật TP.HCM\n- Cử nhân Thiết kế Đồ họa - Đại học Mỹ thuật TP.HCM\n\nKINH NGHIỆM:\n- Art Director tại VNG (2024 - Nay)\n- Senior Graphic Designer tại Ogilvy Vietnam (2019 - 2023)\n- Thành thạo Adobe CC, Figma, Sketch.\n\nGIẢNG DẠY:\n- Giảng viên Thỉnh giảng tại Đại học Kiến trúc TP.HCM. Áp dụng Problem-based learning.\n- IELTS 7.5. Đồng ý onsite, bằng lái đầy đủ, background check ok.`,
+        screeningResults: [
+          { criterionId: 'c1', passed: true, valueFound: 'Thạc sĩ Mỹ thuật công nghiệp, Cử nhân Thiết kế Đồ họa', confidence: 'High', reasoning: 'Ứng viên có bằng Cử nhân và Thạc sĩ đúng chuyên ngành tại ĐH Mỹ thuật TP.HCM.' },
+          { criterionId: 'c2', passed: true, valueFound: '5 năm kinh nghiệm tại Ogilvy và VNG', confidence: 'High', reasoning: '5 năm làm việc thực tế ở các vị trí Senior và Art Director vượt yêu cầu 1 năm.' },
+          { criterionId: 'c3', passed: true, valueFound: 'IELTS 7.5', confidence: 'High', reasoning: 'Trình độ tiếng Anh xuất sắc, hoàn toàn đủ năng lực làm việc trong môi trường quốc tế.' },
+          { criterionId: 'c4', passed: true, valueFound: 'Đồng ý onsite tại TP.HCM', confidence: 'High', reasoning: 'Ứng viên cư trú tại Q3, TP.HCM và xác nhận đồng ý làm việc trực tiếp tại trường.' },
+          { criterionId: 'c6', passed: true, valueFound: 'Có bằng lái A1 và B2', confidence: 'High', reasoning: 'Có bằng lái xe hợp lệ phục vụ việc di chuyển.' },
+          { criterionId: 'c7', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Đã xác nhận chấp nhận quy trình kiểm tra lý lịch.' },
+          { criterionId: 'c8', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Đã xác nhận chấp nhận xét nghiệm chất kích thích.' },
+          { criterionId: 'c9', passed: true, valueFound: 'Có thể đi làm ngay', confidence: 'High', reasoning: 'Đồng ý nhận việc và bắt đầu ngay lập tức.' },
+          { criterionId: 'c10', passed: true, valueFound: '3 năm giảng dạy thỉnh giảng, áp dụng PBL', confidence: 'High', reasoning: 'Đã có kinh nghiệm dạy học giảng đường đại học và am hiểu phương pháp giảng dạy chủ động.' }
+        ]
+      },
+      {
+        id: 'cand2',
+        name: 'Trần Thị Hương',
+        avatar: '👩‍🎨',
+        matchRate: 65,
+        status: 'Partial',
+        role: 'Giảng viên Thiết kế Đồ họa',
+        nationality: 'Việt Nam',
+        education: 'Cử nhân Thiết kế Đồ họa (Đại học Tôn Đức Thắng, tốt nghiệp năm 2021)',
+        experience: '3 năm kinh nghiệm Graphic Designer tại Pixel Studio (Agency vừa và nhỏ)',
+        teaching: 'Chưa từng giảng dạy tại giảng đường. Chỉ có kinh nghiệm hướng dẫn thực tập sinh mới tại Pixel Studio.',
+        english: 'Giao tiếp tiếng Anh cơ bản (Bằng B1 cũ, tương đương IELTS 5.0, viết email chậm, phản xạ còn ngập ngừng)',
+        onsite: 'Không đồng ý Onsite 100% (Chỉ muốn làm việc 3 ngày/tuần trực tiếp, còn lại xin làm Remote/Hybrid)',
+        driverLicense: 'Có (Bằng lái xe máy A1)',
+        backgroundCheck: 'Có (Đồng ý)',
+        drugTest: 'Có (Đồng ý)',
+        startImmediately: 'Không (Cần thông báo trước 30 ngày cho công ty cũ)',
+        toolsScore: 80,
+        teachScore: 45,
+        teamsScore: 55,
+        pros: [
+          'Đúng bằng cử nhân thiết kế tại trường uy tín ĐH Tôn Đức Thắng',
+          '3 năm kinh nghiệm thiết kế thực tế ở agency',
+          'Đầy đủ hồ sơ năng lực, bằng lái xe máy, chấp nhận kiểm tra lý lịch sức khỏe'
+        ],
+        cons: [
+          'Không đồng ý làm việc trực tiếp (On-site) 100% tại trường',
+          'Tiếng Anh ở mức trung bình, phản xạ yếu, khó dạy trong môi trường quốc tế',
+          'Chưa từng giảng dạy chính quy hoặc thiết lập bài giảng học thuật',
+          'Không thể nhận việc ngay lập tức (vướng thời gian bàn giao 30 ngày)'
+        ],
+        summary: 'Ứng viên đạt yêu cầu cơ bản về chuyên môn và bằng cấp thiết kế. Tuy nhiên, điểm hạn chế lớn nhất là không đáp ứng điều kiện làm việc Onsite 100%, khả năng tiếng Anh chưa tốt và chưa thể đi làm ngay. Cần cân nhắc thêm nếu trường có cơ chế hybrid.',
+        rawCVText: `CV TRẦN THỊ HƯƠNG - THIẾT KẾ ĐỒ HỌA\nEmail: huong.tranpixel@outlook.com\nQuốc tịch: Việt Nam\n\nHỌC VẤN:\n- Cử nhân Thiết kế Đồ họa - Đại học Tôn Đức Thắng (2021)\n\nKINH NGHIỆM:\n- 3 năm làm Graphic Designer tại Pixel Studio.\n- Mentor hướng dẫn trực tiếp cho 4 thực tập sinh.\n\nNGOẠI NGỮ & ĐIỀU KIỆN:\n- Tiếng Anh B1 cũ (giao tiếp cơ bản, viết email chậm).\n- Chỉ làm việc tối đa 3 ngày/tuần tại văn phòng (muốn hybrid).\n- Cần 30 ngày báo trước. Có bằng lái xe máy A1.`,
+        screeningResults: [
+          { criterionId: 'c1', passed: true, valueFound: 'Cử nhân Thiết kế Đồ họa (ĐH Tôn Đức Thắng)', confidence: 'High', reasoning: 'Có bằng Cử nhân chuyên ngành Thiết kế đồ họa đúng yêu cầu.' },
+          { criterionId: 'c2', passed: true, valueFound: '3 năm kinh nghiệm thiết kế tại Pixel Studio', confidence: 'High', reasoning: 'Kinh nghiệm 3 năm thiết kế đồ họa đạt yêu cầu (>1 năm).' },
+          { criterionId: 'c3', passed: false, valueFound: 'Tiếng Anh B1 / Giao tiếp trung bình', confidence: 'Medium', reasoning: 'Kỹ năng tiếng Anh ở mức cơ bản, phản xạ nói còn yếu, chưa đạt chuẩn xuất sắc.' },
+          { criterionId: 'c4', passed: false, valueFound: 'Chỉ làm tối đa 3 ngày/tuần onsite', confidence: 'High', reasoning: 'Không đạt tiêu chí bắt buộc làm việc Onsite 100% tại trường.' },
+          { criterionId: 'c6', passed: true, valueFound: 'Có bằng lái A1', confidence: 'High', reasoning: 'Đáp ứng bằng lái xe máy hợp lệ.' },
+          { criterionId: 'c7', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Chấp nhận kiểm tra lý lịch trước khi nhận việc.' },
+          { criterionId: 'c8', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Đồng ý xét nghiệm sức khỏe & chất kích thích.' },
+          { criterionId: 'c9', passed: false, valueFound: 'Cần báo trước 30 ngày', confidence: 'High', reasoning: 'Không thể nhận việc ngay lập tức do vướng hợp đồng lao động cũ.' },
+          { criterionId: 'c10', passed: false, valueFound: 'Mentor thực tập sinh, chưa dạy học chính thức', confidence: 'Medium', reasoning: 'Chưa có kinh nghiệm giảng bài hay xây dựng chương trình học thuật chuyên nghiệp.' }
+        ]
+      },
+      {
+        id: 'cand3',
+        name: 'Lê Minh Tú',
+        avatar: '👨‍🏫',
+        matchRate: 92,
+        status: 'Passed',
+        role: 'Giảng viên Thiết kế Đồ họa (Tốt nghiệp Thạc sĩ tại Hàn Quốc)',
+        nationality: 'Việt Nam',
+        education: 'Thạc sĩ Mỹ thuật công nghiệp - Đại học Hongik, Seoul, Hàn Quốc (2018)',
+        experience: '6 năm kinh nghiệm Senior Digital Designer tại Seoul (Limbic Studio & Innocean)',
+        teaching: 'Từng thỉnh giảng ngắn hạn 1 số khóa học đồ họa thực hành cơ bản tại Trung tâm SBS Seoul trong 6 tháng.',
+        english: 'IELTS 8.0 (Nói tiếng Anh lưu loát). Tiếng Việt bản xứ.',
+        onsite: 'Có (Sẵn sàng làm onsite tại TP.HCM)',
+        driverLicense: 'Có (Bằng lái xe máy hạng A1 hợp lệ)',
+        backgroundCheck: 'Có (Đồng ý)',
+        drugTest: 'Có (Đồng ý)',
+        startImmediately: 'Có (Sẵn sàng nhận việc và đi làm ngay)',
+        toolsScore: 92,
+        teachScore: 75,
+        teamsScore: 90,
+        pros: [
+          'Tốt nghiệp Thạc sĩ tại Đại học danh tiếng của Hàn Quốc (Đại học Hongik)',
+          '6 năm kinh nghiệm thiết kế đồ họa kỹ thuật số đỉnh cao tại Seoul',
+          'Tiếng Anh IELTS 8.0 cực tốt',
+          'Quốc tịch Việt Nam, sẵn sàng làm việc ngay'
+        ],
+        cons: [
+          'Kinh nghiệm giảng dạy chính quy còn ít (chủ yếu dạy thỉnh giảng ngắn hạn 6 tháng tại trung tâm)'
+        ],
+        summary: 'Ứng viên có chuyên môn thiết kế và ngoại ngữ cực kỳ xuất sắc với bằng Thạc sĩ từ Hàn Quốc. Quốc tịch Việt Nam và sẵn sàng nhận việc ngay. Điểm hạn chế duy nhất là kinh nghiệm giảng dạy thực tế chưa nhiều, cần bồi dưỡng thêm về nghiệp vụ sư phạm.',
+        rawCVText: `LÊ MINH TÚ - SENIOR DIGITAL DESIGNER\nEmail: minhtu.le@gmail.com | SĐT: 0987 654 321 | Địa chỉ: Quận 1, TP.HCM\nQuốc tịch: Việt Nam\n\nHỌC VẤN:\n- Thạc sĩ Mỹ thuật Công nghiệp - Đại học Hongik, Seoul, Hàn Quốc (2016 - 2018)\n\nKINH NGHIỆM THỰC CHIẾN:\n- Senior Digital Designer | Innocean Worldwide, Seoul (2021 - 2024): Thiết kế các chiến dịch quảng cáo và giao diện người dùng lớn.\n- UI/UX Designer | Limbic Studio, Seoul (2018 - 2021): Thiết kế giao diện di động và chuyển động đồ họa.\n\nKINH NGHIỆM GIẢNG DẠY:\n- Giảng viên Thỉnh giảng | Trung tâm Đồ họa SBS Seoul (2022): Đứng lớp 6 tháng các môn Photoshop, Illustrator.\n\nNGOẠI NGỮ & KỸ NĂNG KHÁC:\n- Tiếng Anh: IELTS 8.0 (Giao tiếp tốt)\n- Tiếng Việt: Bản xứ (Native)\n- Bằng lái xe: Có bằng lái xe máy A1 hợp lệ.\n- Yêu cầu khác: Sẵn sàng làm việc onsite 100% tại TP.HCM. Đồng ý kiểm tra lý lịch tư pháp và sức khỏe. Có thể nhận việc ngay lập tức.`,
+        screeningResults: [
+          { criterionId: 'c1', passed: true, valueFound: 'Thạc sĩ Mỹ thuật công nghiệp (Đại học Hongik)', confidence: 'High', reasoning: 'Đạt yêu cầu học vấn thạc sĩ chuyên ngành nghệ thuật/thiết kế.' },
+          { criterionId: 'c2', passed: true, valueFound: '6 năm kinh nghiệm Senior Designer tại Seoul', confidence: 'High', reasoning: 'Kinh nghiệm làm việc chuyên môn vượt xa yêu cầu tối thiểu.' },
+          { criterionId: 'c3', passed: true, valueFound: 'IELTS 8.0', confidence: 'High', reasoning: 'Năng lực tiếng Anh xuất sắc.' },
+          { criterionId: 'c4', passed: true, valueFound: 'Đồng ý onsite tại TP.HCM', confidence: 'High', reasoning: 'Sẵn sàng làm việc onsite tại trường.' },
+          { criterionId: 'c6', passed: true, valueFound: 'Có bằng lái A1', confidence: 'High', reasoning: 'Có giấy phép lái xe máy hợp lệ.' },
+          { criterionId: 'c7', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Đồng ý thực hiện kiểm tra lý lịch.' },
+          { criterionId: 'c8', passed: true, valueFound: 'Đồng ý', confidence: 'High', reasoning: 'Đồng ý kiểm tra chất kích thích.' },
+          { criterionId: 'c9', passed: true, valueFound: 'Sẵn sàng đi làm ngay', confidence: 'High', reasoning: 'Có thể bắt đầu nhận việc ngay lập tức.' },
+          { criterionId: 'c10', passed: true, valueFound: 'Thỉnh giảng 6 tháng tại trung tâm SBS Seoul', confidence: 'Medium', reasoning: 'Có kinh nghiệm giảng dạy ngắn hạn.' }
+        ]
+      }
+    ];
+
+    // CVScreeningSection Component
+    function CVScreeningSection({ criteria, candidates, selectedCandidateId, setSelectedCandidateId, onAddCandidate, apiKey, batches, onSaveCandidateToBatch }) {
+      const [cvText, setCvText] = useState('');
+      const [candidateName, setCandidateName] = useState('');
+      const [isScreening, setIsScreening] = useState(false);
+      const [viewMode, setViewMode] = useState('profile');
+      const [statusMessage, setStatusMessage] = useState('');
+      const [dragActive, setDragActive] = useState(false);
+      const [currentPdfUrl, setCurrentPdfUrl] = useState('');
+
+      // GitHub integration state
+      const [githubToken, setGithubToken] = useState(() => localStorage.getItem('github_token') || '');
+      const [githubOwner, setGithubOwner] = useState(() => localStorage.getItem('github_owner') || '');
+      const [githubRepo, setGithubRepo] = useState(() => localStorage.getItem('github_repo') || '');
+      const [githubBranch, setGithubBranch] = useState(() => localStorage.getItem('github_branch') || 'main');
+      const [githubFolder, setGithubFolder] = useState(() => localStorage.getItem('github_folder') || 'cvs');
+      const [githubFiles, setGithubFiles] = useState(() => {
+        try {
+          return JSON.parse(localStorage.getItem('github_uploaded_files')) || [];
+        } catch (e) {
+          return [];
+        }
+      });
+      const [showGitConfig, setShowGitConfig] = useState(false);
+      const [isUploading, setIsUploading] = useState(false);
+      const [uploadStatus, setUploadStatus] = useState('');
+      const [uploadError, setUploadError] = useState('');
+
+      const saveGitConfig = (key, val) => {
+        localStorage.setItem(key, val);
+      };
+
+      const handleUploadToGitHub = async () => {
+        const fileInput = document.getElementById('github-file-input');
+        const file = fileInput?.files?.[0];
+        if (!file) {
+          setUploadError("Vui lòng chọn một tệp PDF để tải lên.");
+          return;
+        }
+
+        if (!githubToken || !githubOwner || !githubRepo) {
+          setUploadError("Vui lòng cấu hình đầy đủ: Token, Username và Repository.");
+          setShowGitConfig(true);
+          return;
+        }
+
+        setIsUploading(true);
+        setUploadStatus("Đang mã hóa tệp PDF...");
+        setUploadError("");
+
+        try {
+          const path = githubFolder ? `${githubFolder}/${file.name}` : file.name;
+          const url = `https://api.github.com/repos/${githubOwner}/${githubRepo}/contents/${path}`;
+          
+          // Convert file to base64
+          const reader = new FileReader();
+          const base64Promise = new Promise((resolve, reject) => {
+            reader.onload = () => {
+              const base64String = reader.result.split(',')[1];
+              resolve(base64String);
+            };
+            reader.onerror = (error) => reject(error);
+          });
+          reader.readAsDataURL(file);
+          const content = await base64Promise;
+          
+          setUploadStatus("Đang đối soát tệp trên GitHub...");
+          let sha = undefined;
+          try {
+            const checkRes = await fetch(url, {
+              headers: {
+                'Authorization': `token ${githubToken}`
+              }
+            });
+            if (checkRes.ok) {
+              const checkData = await checkRes.json();
+              sha = checkData.sha;
+            }
+          } catch (err) {
+            console.log("Không có tệp cũ hoặc lỗi kiểm tra SHA:", err);
+          }
+          
+          setUploadStatus("Đang đẩy tệp lên kho chứa GitHub...");
+          const body = {
+            message: `Upload ${file.name} via Talent AI Lens`,
+            content: content,
+            branch: githubBranch
+          };
+          if (sha) {
+            body.sha = sha;
+          }
+          
+          const uploadRes = await fetch(url, {
+            method: 'PUT',
+            headers: {
+              'Authorization': `token ${githubToken}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          });
+          
+          if (!uploadRes.ok) {
+            const errorData = await uploadRes.json();
+            throw new Error(errorData.message || "Lỗi phản hồi từ GitHub API");
+          }
+          
+          const rawUrl = `https://raw.githubusercontent.com/${githubOwner}/${githubRepo}/${githubBranch}/${path}`;
+          const pagesUrl = `https://${githubOwner}.github.io/${githubRepo}/${path}`;
+          
+          const newFile = {
+            name: file.name,
+            path: path,
+            rawUrl: rawUrl,
+            pagesUrl: pagesUrl,
+            uploadedAt: new Date().toISOString()
+          };
+
+          const updatedFiles = [newFile, ...githubFiles.filter(f => f.name !== file.name)];
+          setGithubFiles(updatedFiles);
+          localStorage.setItem('github_uploaded_files', JSON.stringify(updatedFiles));
+          
+          setUploadStatus("Đã tải tệp lên GitHub và đồng bộ thành công!");
+          fileInput.value = "";
+          
+          // Auto load the uploaded file
+          setTimeout(() => {
+            handleLoadSamplePDF(rawUrl);
+          }, 500);
+
+        } catch (err) {
+          console.error(err);
+          setUploadError(err.message || "Đã xảy ra lỗi khi tải lên.");
+        } finally {
+          setIsUploading(false);
+        }
+      };
+
+      const handleDeleteGitHubFile = (fileName) => {
+        const updated = githubFiles.filter(f => f.name !== fileName);
+        setGithubFiles(updated);
+        localStorage.setItem('github_uploaded_files', JSON.stringify(updated));
+      };
+
+      const activeCandidate = candidates.find(c => c.id === selectedCandidateId) || candidates[0];
+
+      const extractTextFromPDF = async (arrayBuffer) => {
+        const pdfjsLib = window.pdfjsLib;
+        if (!pdfjsLib) {
+          throw new Error("Thư viện PDF.js chưa được tải. Vui lòng kiểm tra kết nối mạng.");
+        }
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        let text = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          if (!textContent.items || textContent.items.length === 0) continue;
+
+          // Sort items: top-to-bottom (translateY desc), then left-to-right (translateX asc)
+          const items = [...textContent.items];
+          items.sort((a, b) => {
+            const yA = a.transform[5];
+            const yB = b.transform[5];
+            if (Math.abs(yA - yB) > 5) {
+              return yB - yA;
+            }
+            return a.transform[4] - b.transform[4];
+          });
+
+          let lastY = null;
+          let pageText = '';
+          for (const item of items) {
+            const currentY = item.transform[5];
+            if (lastY !== null && Math.abs(currentY - lastY) > 5) {
+              pageText += '\n';
+            } else if (lastY !== null) {
+              pageText += ' ';
+            }
+            pageText += item.str;
+            lastY = currentY;
+          }
+          text += pageText + '\n\n';
+        }
+        return text.trim();
+      };
+
+      const handleFile = async (file) => {
+        if (!file) return;
+        const fileType = file.name.split('.').pop().toLowerCase();
+
+        if (fileType === 'pdf') {
+          setIsScreening(true);
+          setStatusMessage("Đang trích xuất văn bản từ tệp PDF...");
+          try {
+            const arrayBuffer = await file.arrayBuffer();
+            const extractedText = await extractTextFromPDF(arrayBuffer);
+            setCvText(extractedText);
+            
+            // Auto fill candidate name if empty
+            if (!candidateName) {
+              const cleanName = file.name
+                .replace(/\.[^/.]+$/, "")
+                .replace(/[-_]/g, " ")
+                .replace(/cv|resume|portfolio/gi, "")
+                .trim();
+              setCandidateName(cleanName);
+            }
+            
+            const pdfBlobUrl = URL.createObjectURL(file);
+            setCurrentPdfUrl(pdfBlobUrl);
+          } catch (err) {
+            console.error("Lỗi đọc PDF:", err);
+            alert("Không thể trích xuất văn bản từ tệp PDF này: " + err.message + ". Vui lòng dán trực tiếp văn bản.");
+          } finally {
+            setIsScreening(false);
+            setStatusMessage('');
+          }
+        } else if (fileType === 'txt' || fileType === 'md') {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            if (event.target?.result) {
+              setCvText(event.target.result);
+              
+              if (!candidateName) {
+                const cleanName = file.name
+                  .replace(/\.[^/.]+$/, "")
+                  .replace(/[-_]/g, " ")
+                  .replace(/cv|resume|portfolio/gi, "")
+                  .trim();
+                setCandidateName(cleanName);
+              }
+            }
+          };
+          reader.readAsText(file);
+          setCurrentPdfUrl('');
+        } else {
+          alert("Hệ thống chỉ hỗ trợ tệp định dạng .txt hoặc .pdf");
+        }
+      };
+
+      const handleFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          handleFile(e.target.files[0]);
+        }
+      };
+
+      const handleLoadSamplePDF = async (pdfPath) => {
+        setIsScreening(true);
+        setStatusMessage("Đang tải tệp PDF mẫu từ hệ thống...");
+        try {
+          const response = await fetch(pdfPath);
+          if (!response.ok) {
+            throw new Error("Không thể tải tệp PDF mẫu: HTTP " + response.status);
+          }
+          const arrayBuffer = await response.arrayBuffer();
+          setStatusMessage("Đang trích xuất văn bản từ tệp PDF mẫu...");
+          const extractedText = await extractTextFromPDF(arrayBuffer);
+          setCvText(extractedText);
+          
+          // Auto fill candidate name
+          const fileName = pdfPath.split('/').pop();
+          const cleanName = fileName
+            .replace(/\.[^/.]+$/, "")
+            .replace(/[-_]/g, " ")
+            .replace(/cv|resume|portfolio/gi, "")
+            .replace(/^\d+[\s-]*/, "") // Remove starting numbers like "1-", "2-"
+            .trim();
+          setCandidateName(cleanName);
+          setCurrentPdfUrl(pdfPath);
+        } catch (err) {
+          console.error("Lỗi tải PDF mẫu:", err);
+          alert("Lỗi khi tải hoặc phân tích PDF mẫu: " + err.message);
+        } finally {
+          setIsScreening(false);
+          setStatusMessage('');
+        }
+      };
+
+      const handleDrag = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === "dragenter" || e.type === "dragover") {
+          setDragActive(true);
+        } else if (e.type === "dragleave") {
+          setDragActive(false);
+        }
+      };
+
+      const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      };
+
+      const loadPreloaded = (id) => {
+        const found = candidates.find(c => c.id === id);
+        if (found) {
+          setCvText(found.rawCVText);
+          setCandidateName(found.name);
+          setSelectedCandidateId(id);
+          setCurrentPdfUrl(found.pdfUrl || '');
+        }
+      };
+
+      const parseLocalCV = (text, name) => {
+        const textLower = text.toLowerCase();
+        let education = "Không đề cập";
+        let experience = "Không đề cập";
+        let english = "Không đề cập";
+        let onsite = "Có";
+        let nationality = "Việt Nam";
+        let driverLicense = "Có";
+        let backgroundCheck = "Có";
+        let drugTest = "Có";
+        let startImmediately = "Có";
+        let teaching = "Không đề cập";
+
+        let toolsScore = 70;
+        let teachScore = 40;
+        let teamsScore = 60;
+
+        if (textLower.includes("cử nhân") || textLower.includes("bachelor") || textLower.includes("tốt nghiệp")) {
+          education = "Cử nhân chuyên ngành Thiết kế Đồ họa / Mỹ thuật";
+        }
+        if (textLower.includes("thạc sĩ") || textLower.includes("master")) {
+          education = "Thạc sĩ chuyên ngành Mỹ thuật công nghiệp";
+        }
+        if (textLower.includes("kinh nghiệm") || textLower.includes("làm việc")) {
+          experience = "Có kinh nghiệm thực tế thiết kế đồ họa";
+        }
+        if (textLower.includes("ielts") || textLower.includes("english") || textLower.includes("tiếng anh")) {
+          const m = textLower.match(/ielts\s*([0-9.]+)/i);
+          english = m ? `IELTS ${m[1]} (Giao tiếp tốt)` : "Có khả năng giao tiếp tiếng Anh tốt";
+        }
+        if (textLower.includes("hybrid") || textLower.includes("remote") || textLower.includes("không onsite")) {
+          onsite = "Không (Chỉ làm hybrid/remote)";
+        }
+        if (textLower.includes("hàn quốc") || textLower.includes("korean") || textLower.includes("lee")) {
+          nationality = "Hàn Quốc";
+        }
+        if (textLower.includes("chưa có bằng lái") || textLower.includes("không có bằng lái")) {
+          driverLicense = "Không (Chưa có bằng lái)";
+        }
+        if (textLower.includes("giảng dạy") || textLower.includes("thỉnh giảng") || textLower.includes("dạy")) {
+          teaching = "Có kinh nghiệm đứng lớp thỉnh giảng";
+          teachScore = 75;
+        }
+
+        const screeningResults = criteria.map(crit => {
+          let passed = true;
+          let valueFound = "Đạt yêu cầu";
+          let reasoning = "";
+
+          switch(crit.key) {
+            case 'education':
+              passed = textLower.includes("cử nhân") || textLower.includes("thạc sĩ") || textLower.includes("bachelor") || textLower.includes("master") || textLower.includes("đại học");
+              valueFound = education;
+              reasoning = passed ? "Có bằng cấp mỹ thuật/thiết kế." : "Không tìm thấy bằng cấp cử nhân trở lên.";
+              break;
+            case 'experience':
+              passed = textLower.includes("kinh nghiệm") || textLower.includes("exp") || textLower.includes("làm việc");
+              valueFound = experience;
+              reasoning = passed ? "Có kinh nghiệm thực tế trong lĩnh vực." : "Chưa có kinh nghiệm thiết kế rõ ràng.";
+              break;
+            case 'english':
+              passed = textLower.includes("tiếng anh") || textLower.includes("english") || textLower.includes("ielts");
+              valueFound = english;
+              reasoning = passed ? "Đạt chuẩn giao tiếp tiếng Anh." : "Khả năng giao tiếp tiếng Anh hạn chế.";
+              break;
+            case 'onsite':
+              passed = onsite === "Có";
+              valueFound = onsite;
+              reasoning = passed ? "Đồng ý onsite 100%." : "Không đồng ý onsite 100%.";
+              break;
+
+            case 'driverLicense':
+              passed = driverLicense === "Có";
+              valueFound = driverLicense;
+              reasoning = passed ? "Có bằng lái xe di chuyển." : "Không có bằng lái xe hợp lệ.";
+              break;
+            case 'backgroundCheck':
+              passed = backgroundCheck === "Có";
+              valueFound = backgroundCheck;
+              reasoning = "Chấp nhận kiểm tra lý lịch.";
+              break;
+            case 'drugTest':
+              passed = drugTest === "Có";
+              valueFound = drugTest;
+              reasoning = "Chấp nhận xét nghiệm chất.";
+              break;
+            case 'startImmediately':
+              passed = startImmediately === "Có";
+              valueFound = startImmediately;
+              reasoning = "Có thể nhận việc ngay.";
+              break;
+            case 'teaching':
+              passed = textLower.includes("dạy") || textLower.includes("giảng viên") || textLower.includes("sư phạm") || textLower.includes("mentor");
+              valueFound = teaching;
+              reasoning = passed ? "Đã có kinh nghiệm dạy học/cố vấn." : "Chưa có kinh nghiệm giảng dạy.";
+              break;
+          }
+
+          return { criterionId: crit.id, passed, valueFound, confidence: 'High', reasoning };
+        });
+
+        const mustHaves = criteria.filter(c => c.isRequired);
+        const passedMustHaves = screeningResults.filter(r => {
+          const c = criteria.find(x => x.id === r.criterionId);
+          return c?.isRequired && r.passed;
+        }).length;
+
+        let status = 'Passed';
+        if (passedMustHaves < mustHaves.length) status = 'Rejected';
+        else if (screeningResults.filter(r => !r.passed).length > 2) status = 'Partial';
+
+        if (textLower.includes("adobe") || textLower.includes("photoshop") || textLower.includes("illustrator")) toolsScore = 85;
+        if (textLower.includes("figma") || textLower.includes("sketch")) toolsScore += 5;
+        if (onsite === "Có") teamsScore = 80;
+        else teamsScore = 40;
+
+        const passedCount = screeningResults.filter(r => r.passed).length;
+        const matchRate = Math.round((passedCount / criteria.length) * 100);
+        const finalName = name || "Ứng viên mới";
+
+        return {
+          id: `cand_${Date.now()}`,
+          name: finalName,
+          avatar: '👤',
+          matchRate,
+          status,
+          role: 'Giảng viên Thiết kế Đồ họa',
+          nationality,
+          education,
+          experience,
+          teaching,
+          english,
+          onsite,
+          driverLicense,
+          backgroundCheck,
+          drugTest,
+          startImmediately,
+          toolsScore,
+          teachScore,
+          teamsScore,
+          pros: screeningResults.filter(r => r.passed).map(r => {
+            const c = criteria.find(x => x.id === r.criterionId);
+            return `${c?.name}: ${r.valueFound}`;
+          }).slice(0, 4),
+          cons: screeningResults.filter(r => !r.passed).map(r => {
+            const c = criteria.find(x => x.id === r.criterionId);
+            return `${c?.name}: ${r.reasoning}`;
+          }),
+          summary: `Kết quả phân tích CV của ${finalName}. Đạt ${passedCount}/${criteria.length} tiêu chí sàng lọc của Cao Đẳng Việt Mỹ. Trụ cột chuyên môn thiết kế đạt ${toolsScore}%.`,
+          screeningResults,
+          rawCVText: text,
+          pdfUrl: currentPdfUrl || undefined
+        };
+      };
+
+      const handleScreenCV = async () => {
+        if (!cvText.trim()) {
+          alert("Vui lòng nhập nội dung CV.");
+          return;
+        }
+
+        setIsScreening(true);
+        setStatusMessage("Đang quét và chấm điểm hồ sơ...");
+
+        if (apiKey) {
+          try {
+            const criteriaPrompt = criteria.map((c, i) => `${i+1}. [Key: ${c.key}] (Bắt buộc: ${c.isRequired ? 'Có' : 'Không'}): ${c.name} - ${c.description}`).join('\n');
+            const prompt = `
+Bạn là một chuyên gia tuyển dụng cao cấp của Cao Đẳng Việt Mỹ. Hãy phân tích CV ứng viên dưới đây dựa trên danh sách tiêu chí sàng lọc:
+DANH SÁCH TIÊU CHÍ SÀNG LỌC:
+${criteriaPrompt}
+
+HỒ SƠ ỨNG VIÊN (Tên: ${candidateName || 'Chưa biết'}):
+---
+${cvText}
+---
+
+Hãy đánh giá xem ứng viên đạt hay không đạt từng tiêu chí trên. Sau đó trả về kết quả dưới định dạng JSON duy nhất, không bọc markdown. JSON phải tuân thủ đúng cấu trúc sau:
+{
+  "name": "Tên đầy đủ của ứng viên",
+  "matchRate": 90, // Tỷ lệ khớp tổng thể từ 0 đến 100
+  "status": "Passed" | "Partial" | "Rejected",
+  "nationality": "Quốc tịch phát hiện được",
+  "education": "Mô tả bằng cấp của ứng viên",
+  "experience": "Mô tả số năm/kinh nghiệm thiết kế",
+  "teaching": "Mô tả nghiệp vụ sư phạm/đứng lớp",
+  "english": "Mô tả trình độ tiếng Anh",
+  "onsite": "Có hoặc Không kèm lý do",
+  "driverLicense": "Có hoặc Không kèm lý do",
+  "backgroundCheck": "Đồng ý hoặc không",
+  "drugTest": "Đồng ý hoặc không",
+  "startImmediately": "Có hoặc không",
+  "toolsScore": 85, // điểm trụ cột công cụ 0-100
+  "teachScore": 75, // điểm trụ cột sư phạm 0-100
+  "teamsScore": 80, // điểm trụ cột hội nhập 0-100
+  "pros": ["Điểm cộng 1", "Điểm cộng 2"],
+  "cons": ["Điểm trừ 1", "Điểm trừ 2"],
+  "summary": "Nhận xét tổng thể bằng tiếng Việt, ngắn gọn từ 3-4 câu",
+  "screeningResults": [
+    {
+      "criterionId": "ID của tiêu chí",
+      "passed": true,
+      "valueFound": "Thông tin phát hiện",
+      "confidence": "High",
+      "reasoning": "Lý giải bằng tiếng Việt"
+    }
+  ]
+}
+`;
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: "application/json" }
+              })
+            });
+
+            if (!res.ok) throw new Error("Gemini API Error");
+            const data = await res.json();
+            const parsedData = JSON.parse(data.candidates[0].content.parts[0].text.trim());
+            
+            const newCand = {
+              id: `cand_${Date.now()}`,
+              name: parsedData.name || candidateName || "Ứng viên mới",
+              avatar: '👤',
+              matchRate: parsedData.matchRate || 50,
+              status: parsedData.status || 'Partial',
+              role: 'Giảng viên Thiết kế Đồ họa',
+              nationality: parsedData.nationality || 'Chưa rõ',
+              education: parsedData.education || 'Chưa rõ',
+              experience: parsedData.experience || 'Chưa rõ',
+              teaching: parsedData.teaching || 'Chưa rõ',
+              english: parsedData.english || 'Chưa rõ',
+              onsite: parsedData.onsite || 'Chưa rõ',
+              driverLicense: parsedData.driverLicense || 'Chưa rõ',
+              backgroundCheck: parsedData.backgroundCheck || 'Chưa rõ',
+              drugTest: parsedData.drugTest || 'Chưa rõ',
+              startImmediately: parsedData.startImmediately || 'Chưa rõ',
+              toolsScore: parsedData.toolsScore || 70,
+              teachScore: parsedData.teachScore || 50,
+              teamsScore: parsedData.teamsScore || 60,
+              pros: parsedData.pros || [],
+              cons: parsedData.cons || [],
+              summary: parsedData.summary || 'Đã phân tích.',
+              screeningResults: criteria.map(crit => {
+                const match = parsedData.screeningResults?.find(r => r.criterionId === crit.id || r.criterionId === crit.key);
+                return {
+                  criterionId: crit.id,
+              passed: match ? match.passed : false,
+                  valueFound: match ? match.valueFound : 'Không tìm thấy',
+                  confidence: match ? match.confidence : 'Medium',
+                  reasoning: match ? match.reasoning : 'Thiếu dữ liệu.'
+                };
+              }),
+              screeningResults: screeningResults,
+              rawCVText: cvText,
+              pdfUrl: currentPdfUrl || undefined
+            };
+            onAddCandidate(newCand);
+          } catch (e) {
+            console.error(e);
+            alert("Lỗi kết nối Gemini AI. Tự động chuyển sang quét Mock cục bộ.");
+            onAddCandidate(parseLocalCV(cvText, candidateName));
+          }
+        } else {
+          // Delay to simulate scanning
+          await new Promise(resolve => setTimeout(resolve, 1200));
+          onAddCandidate(parseLocalCV(cvText, candidateName));
+        }
+
+        setIsScreening(false);
+      };
+
+      return (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400 mb-3">Hồ Sơ Mẫu Thẩm Định</h4>
+              <div className="grid grid-cols-3 gap-2">
+                <button onClick={() => loadPreloaded('cand1')} className={`p-2.5 rounded-lg border text-left transition ${selectedCandidateId === 'cand1' ? 'bg-indigo-600/10 border-indigo-500/80 text-white' : 'bg-slate-950 border-slate-800/70 text-slate-400'}`}>
+                  <div className="text-base mb-1">👨‍🏫</div>
+                  <div className="text-[10px] font-bold truncate">N. M. Tuấn</div>
+                  <div className="text-[8px] text-emerald-400 font-semibold font-mono">Khớp 96%</div>
+                </button>
+                <button onClick={() => loadPreloaded('cand2')} className={`p-2.5 rounded-lg border text-left transition ${selectedCandidateId === 'cand2' ? 'bg-indigo-600/10 border-indigo-500/80 text-white' : 'bg-slate-950 border-slate-800/70 text-slate-400'}`}>
+                  <div className="text-base mb-1">👩‍🎨</div>
+                  <div className="text-[10px] font-bold truncate">T. T. Hương</div>
+                  <div className="text-[8px] text-amber-400 font-semibold font-mono">Một phần 65%</div>
+                </button>
+                <button onClick={() => loadPreloaded('cand3')} className={`p-2.5 rounded-lg border text-left transition ${selectedCandidateId === 'cand3' ? 'bg-indigo-600/10 border-indigo-500/80 text-white' : 'bg-slate-950 border-slate-800/70 text-slate-400'}`}>
+                  <div className="text-base mb-1">👨</div>
+                  <div className="text-[10px] font-bold truncate">Lee Min-Soo</div>
+                  <div className="text-[8px] text-rose-400 font-semibold font-mono">Loại 45%</div>
+                </button>
+              </div>
+            </div>
+
+            <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Nhập Dữ Liệu CV</h4>
+                <label className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold cursor-pointer flex items-center gap-1">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>Tải tệp lên (.pdf, .txt)</span>
+                  <input 
+                    type="file" 
+                    accept=".txt,.pdf" 
+                    onChange={handleFileChange} 
+                    className="hidden" 
+                  />
+                </label>
+              </div>
+
+              {/* Dropdown chọn CV từ hệ thống */}
+              <div className="flex flex-col gap-1.5 bg-slate-950/40 p-3 rounded-lg border border-slate-800/50">
+                <label className="text-[9px] text-indigo-400 font-bold uppercase tracking-wide">Hoặc chọn CV từ hệ thống (PDF)</label>
+                <select 
+                  onChange={(e) => {
+                    if (e.target.value) {
+                      handleLoadSamplePDF(e.target.value);
+                      e.target.value = ""; // reset selection
+                    }
+                  }}
+                  className="w-full bg-slate-950 border border-slate-850 rounded-md px-2 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-sans cursor-pointer"
+                  defaultValue=""
+                >
+                  <option value="" disabled>-- Chọn một tệp CV mẫu --</option>
+                  <optgroup label="Hồ Sơ Mẫu Mặc Định">
+                    <option value="cvs/1-CV - Nhan Nguyen - Senior Graphic Designer.pdf">1. Nhân Nguyễn - Senior Graphic Designer</option>
+                    <option value="cvs/2-CV_Dương Ngọc Anh Thư__Lecturer.pdf">2. Dương Ngọc Anh Thư - Lecturer</option>
+                    <option value="cvs/3-CV_NguyenTuVinh_Designer.pdf">3. Nguyễn Tự Vinh - Designer</option>
+                    <option value="cvs/4-Hai Nguyen CV.pdf">4. Hải Nguyễn - Graphic Designer</option>
+                    <option value="cvs/5-Hai Vu Resume 2026.pdf">5. Hải Vũ - Resume 2026</option>
+                    <option value="cvs/6-PORTFOLIO LUAN VU_2026_full.pdf">6. Luân Vũ - Portfolio 2026</option>
+                    <option value="cvs/7-Resume_NhutNguyen.pdf">7. Nhựt Nguyễn - Resume</option>
+                    <option value="cvs/8-TranquanghuyCV-0356156797.pdf">8. Trần Quang Huy - CV</option>
+                  </optgroup>
+                  {githubFiles.length > 0 && (
+                    <optgroup label="Hồ Sơ Trên GitHub Của Bạn">
+                      {githubFiles.map((file, idx) => (
+                        <option key={idx} value={file.rawUrl}>{file.name}</option>
+                      ))}
+                    </optgroup>
+                  )}
+                </select>
+              </div>
+
+              {/* Khung Đồng bộ & Upload GitHub Pages */}
+              <div className="bg-slate-950/30 border border-slate-800/80 rounded-lg p-3 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-[10px] text-indigo-400 font-bold uppercase tracking-wider">
+                    <Github className="w-3.5 h-3.5" />
+                    <span>Upload CV Lên GitHub Pages</span>
+                  </div>
+                  <button 
+                    onClick={() => setShowGitConfig(!showGitConfig)}
+                    className="text-[9px] text-slate-500 hover:text-indigo-400 font-semibold flex items-center gap-0.5"
+                  >
+                    <span>{showGitConfig ? 'Ẩn cài đặt' : 'Cấu hình repo'}</span>
+                    <Settings className="w-3 h-3" />
+                  </button>
+                </div>
+
+                {showGitConfig && (
+                  <div className="space-y-2 p-2.5 rounded bg-slate-950/60 border border-slate-900 text-xs">
+                    <div className="space-y-1">
+                      <label className="text-[8px] text-slate-500 font-bold uppercase block">GitHub Personal Access Token (PAT)</label>
+                      <input 
+                        type="password" 
+                        placeholder="ghp_..." 
+                        value={githubToken} 
+                        onChange={(e) => { setGithubToken(e.target.value); saveGitConfig('github_token', e.target.value); }} 
+                        className="w-full bg-[#080c14] border border-slate-800 rounded px-2 py-1 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500 font-mono"
+                      />
+                      <p className="text-[7.5px] text-slate-500 leading-normal">
+                        Cần token có quyền <code className="text-indigo-400">repo</code>. Tạo tại GitHub -> Settings -> Developer Settings.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-[8px] text-slate-500 font-bold uppercase block">Username (Owner)</label>
+                        <input 
+                          type="text" 
+                          placeholder="ten-tai-khoan" 
+                          value={githubOwner} 
+                          onChange={(e) => { setGithubOwner(e.target.value); saveGitConfig('github_owner', e.target.value); }} 
+                          className="w-full bg-[#080c14] border border-slate-800 rounded px-2 py-1 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[8px] text-slate-500 font-bold uppercase block">Repository</label>
+                        <input 
+                          type="text" 
+                          placeholder="talent-ai-lens" 
+                          value={githubRepo} 
+                          onChange={(e) => { setGithubRepo(e.target.value); saveGitConfig('github_repo', e.target.value); }} 
+                          className="w-full bg-[#080c14] border border-slate-800 rounded px-2 py-1 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <label className="text-[8px] text-slate-500 font-bold uppercase block">Nhánh (Branch)</label>
+                        <input 
+                          type="text" 
+                          placeholder="main" 
+                          value={githubBranch} 
+                          onChange={(e) => { setGithubBranch(e.target.value); saveGitConfig('github_branch', e.target.value); }} 
+                          className="w-full bg-[#080c14] border border-slate-800 rounded px-2 py-1 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[8px] text-slate-500 font-bold uppercase block">Thư mục (Path)</label>
+                        <input 
+                          type="text" 
+                          placeholder="cvs" 
+                          value={githubFolder} 
+                          onChange={(e) => { setGithubFolder(e.target.value); saveGitConfig('github_folder', e.target.value); }} 
+                          className="w-full bg-[#080c14] border border-slate-800 rounded px-2 py-1 text-[10px] text-slate-200 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex gap-2">
+                  <input 
+                    type="file" 
+                    id="github-file-input"
+                    accept=".pdf" 
+                    className="flex-1 bg-slate-950 border border-slate-850 rounded px-2 py-1 text-[10px] text-slate-400 focus:outline-none cursor-pointer file:mr-2 file:py-0.5 file:px-1.5 file:rounded file:border-0 file:text-[9px] file:font-semibold file:bg-indigo-600/10 file:text-indigo-400 file:cursor-pointer hover:file:bg-indigo-600/20"
+                  />
+                  <button 
+                    onClick={handleUploadToGitHub}
+                    disabled={isUploading}
+                    className={`px-3 py-1 rounded text-[10px] font-bold transition flex items-center gap-1.5 ${
+                      isUploading 
+                        ? 'bg-slate-800 text-slate-500 cursor-not-allowed' 
+                        : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                    }`}
+                  >
+                    {isUploading ? 'Đang tải...' : 'Upload'}
+                  </button>
+                </div>
+
+                {uploadStatus && (
+                  <div className="text-[8px] text-emerald-400 font-semibold flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                    <span>{uploadStatus}</span>
+                  </div>
+                )}
+
+                {uploadError && (
+                  <div className="text-[8px] text-rose-400 font-semibold flex items-center gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-rose-400"></div>
+                    <span>{uploadError}</span>
+                  </div>
+                )}
+
+                {githubFiles.length > 0 && (
+                  <div className="space-y-1 border-t border-slate-855 pt-2 text-[9px]">
+                    <div className="text-slate-500 font-bold uppercase tracking-wide">CV Đã Đồng Bộ Tĩnh</div>
+                    <div className="max-h-[80px] overflow-y-auto divide-y divide-slate-850/40">
+                      {githubFiles.map((file, idx) => (
+                        <div key={idx} className="py-1 flex items-center justify-between gap-2 group">
+                          <span className="text-slate-300 truncate max-w-[160px]" title={file.name}>{file.name}</span>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button 
+                              onClick={() => handleLoadSamplePDF(file.rawUrl)}
+                              className="text-indigo-400 hover:text-indigo-300 font-semibold"
+                            >
+                              Chọn
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteGitHubFile(file.name)}
+                              className="text-rose-500 hover:text-rose-400 font-semibold"
+                            >
+                              Xóa
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold uppercase">Tên Ứng Viên (Không bắt buộc)</label>
+                <input type="text" placeholder="Ví dụ: Nguyễn Văn A" value={candidateName} onChange={e => setCandidateName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"/>
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] text-slate-500 font-bold uppercase">Nội Dung CV</label>
+                <div onDragEnter={handleDrag} onDragOver={handleDrag} onDragLeave={handleDrag} onDrop={handleDrop} className={`relative rounded-lg border transition ${dragActive ? 'border-indigo-500 bg-indigo-500/5' : 'border-slate-800 bg-slate-950/40'}`}>
+                  <textarea rows={12} placeholder="Dán nội dung CV hoặc kéo thả tệp văn bản/PDF tại đây..." value={cvText} onChange={e => setCvText(e.target.value)} className="w-full bg-transparent p-3 text-xs text-slate-200 focus:outline-none font-mono resize-none" />
+                  {cvText.length === 0 && (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-slate-600 gap-2">
+                      <Upload className="w-8 h-8" />
+                      <span className="text-[10px] font-semibold">Kéo thả tệp hoặc click "Tải tệp lên" (.pdf, .txt)</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              <button onClick={handleScreenCV} disabled={isScreening} className={`w-full py-2.5 rounded-lg font-bold text-xs tracking-wide transition flex items-center justify-center gap-2 ${isScreening ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg'}`}>
+                {isScreening ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {statusMessage || 'Đang phân tích...'}
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-4 h-4 text-emerald-400" />
+                    Chạy Phân Tích CV {apiKey ? 'bằng Gemini AI' : 'bằng Bộ Phân Tích Nội Bộ'}
+                  </>
+                )}
+              </button>
+              {!apiKey && <div className="text-center text-[9px] text-slate-500">⚠️ Chưa cấu hình API Key. Sẽ sử dụng bộ phân tích cục bộ.</div>}
+            </div>
+          </div>
+
+          <div className="lg:col-span-7 bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm min-h-[580px] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{activeCandidate.avatar}</span>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">{activeCandidate.name}</h3>
+                    <p className="text-[10px] text-slate-400">{activeCandidate.role}</p>
+                  </div>
+                </div>
+                {activeCandidate.pdfUrl && (
+                  <a 
+                    href={activeCandidate.pdfUrl}
+                    download={activeCandidate.pdfUrl.startsWith('data:') || activeCandidate.pdfUrl.startsWith('blob:') ? `${activeCandidate.name.replace(/\s+/g, '_')}_CV.pdf` : undefined}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition flex items-center gap-1.5 shadow"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Tải CV gốc (PDF)</span>
+                  </a>
+                )}
+              </div>
+
+              {/* Batch Saving Widget */}
+              <div className="mb-4 p-3 bg-slate-950/40 rounded-lg border border-slate-800/60 flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-1.5 text-slate-400">
+                  <FolderPlus className="w-3.5 h-3.5 text-indigo-400" />
+                  <span>Đồng bộ đợt tuyển dụng:</span>
+                </div>
+                <div className="flex items-center gap-2 flex-1 max-w-xs">
+                  <select 
+                    id="batch-select-save"
+                    className="flex-1 bg-slate-950 border border-slate-850 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-sans cursor-pointer"
+                    defaultValue=""
+                  >
+                    <option value="" disabled>-- Chọn đợt tuyển dụng --</option>
+                    {batches && batches.map(b => (
+                      <option key={b.id} value={b.id}>{b.name}</option>
+                    ))}
+                  </select>
+                  <button 
+                    onClick={() => {
+                      const bSelect = document.getElementById('batch-select-save');
+                      const bId = bSelect ? bSelect.value : '';
+                      if (!bId) {
+                        alert("Vui lòng chọn một đợt tuyển dụng để lưu.");
+                        return;
+                      }
+                      onSaveCandidateToBatch(bId, activeCandidate);
+                      alert(`Đã lưu ứng viên "${activeCandidate.name}" vào đợt tuyển dụng thành công!`);
+                    }}
+                    className="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10.5px] font-bold transition shrink-0"
+                  >
+                    Lưu
+                  </button>
+                </div>
+              </div>
+
+              {viewMode === 'profile' ? (
+                <div className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                    <div className="bg-slate-950/40 border border-slate-900 rounded-lg p-3 flex flex-col items-center justify-center text-center">
+                      <span className={`text-4xl font-black font-mono ${activeCandidate.status === 'Passed' ? 'text-emerald-400' : activeCandidate.status === 'Partial' ? 'text-amber-400' : 'text-rose-500'}`}>{activeCandidate.matchRate}%</span>
+                      <span className="text-[9px] text-slate-500 font-bold uppercase tracking-wider mt-1">Độ Trùng Khớp</span>
+                    </div>
+                    <div className="bg-slate-950/40 border border-slate-900 rounded-lg p-3 flex flex-col justify-between">
+                      <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase"><span>Tools</span><span className="text-[#818cf8] font-mono">{activeCandidate.toolsScore}%</span></div>
+                      <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden mt-1.5"><div className="h-full bg-indigo-500" style={{ width: `${activeCandidate.toolsScore}%` }}></div></div>
+                      <span className="text-[9px] text-slate-400 mt-1 truncate">Mỹ thuật & Công cụ</span>
+                    </div>
+                    <div className="bg-slate-950/40 border border-slate-900 rounded-lg p-3 flex flex-col justify-between">
+                      <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase"><span>Teach</span><span className="text-[#34d399] font-mono">{activeCandidate.teachScore}%</span></div>
+                      <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden mt-1.5"><div className="h-full bg-emerald-500" style={{ width: `${activeCandidate.teachScore}%` }}></div></div>
+                      <span className="text-[9px] text-slate-400 mt-1 truncate">Nghiệp vụ Sư phạm</span>
+                    </div>
+                    <div className="bg-slate-950/40 border border-slate-900 rounded-lg p-3 flex flex-col justify-between">
+                      <div className="flex justify-between items-center text-[10px] text-slate-500 font-bold uppercase"><span>Teams</span><span className="text-[#fbbf24] font-mono">{activeCandidate.teamsScore}%</span></div>
+                      <div className="w-full h-1.5 bg-slate-950 rounded-full overflow-hidden mt-1.5"><div className="h-full bg-amber-500" style={{ width: `${activeCandidate.teamsScore}%` }}></div></div>
+                      <span className="text-[9px] text-slate-400 mt-1 truncate">Hội nhập & Lý lịch</span>
+                    </div>
+                  </div>
+
+                  <div className="p-4 rounded-xl bg-slate-950/50 border border-slate-900">
+                    <h4 className="text-[10px] text-indigo-400 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-emerald-400" /> Tóm tắt phân tích của Gemini AI</h4>
+                    <p className="text-xs text-slate-300 leading-relaxed font-sans">{activeCandidate.summary}</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl bg-emerald-950/5 border border-emerald-900/10">
+                      <h4 className="text-[10px] text-emerald-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-1"><ThumbsUp className="w-3.5 h-3.5" /> Điểm cộng nổi bật</h4>
+                      <ul className="space-y-2">
+                        {activeCandidate.pros.length > 0 ? activeCandidate.pros.map((p, i) => (
+                          <li key={i} className="text-xs text-slate-300 flex items-start gap-2 leading-relaxed">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" /><span>{p}</span>
+                          </li>
+                        )) : <li className="text-xs text-slate-500 italic">Không có.</li>}
+                      </ul>
+                    </div>
+                    <div className="p-4 rounded-xl bg-rose-950/5 border border-rose-900/10">
+                      <h4 className="text-[10px] text-rose-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-1"><ThumbsDown className="w-3.5 h-3.5" /> Điểm hạn chế / Cảnh báo</h4>
+                      <ul className="space-y-2">
+                        {activeCandidate.cons.length > 0 ? activeCandidate.cons.map((c, i) => (
+                          <li key={i} className="text-xs text-slate-300 flex items-start gap-2 leading-relaxed">
+                            <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" /><span>{c}</span>
+                          </li>
+                        )) : <li className="text-xs text-emerald-400 font-bold flex items-center gap-1.5"><UserCheck className="w-4 h-4" /> Đạt hoàn hảo mọi chỉ số!</li>}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-800 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                        <th className="py-3 px-2">Câu hỏi sàng lọc</th>
+                        <th className="py-3 px-2">Loại</th>
+                        <th className="py-3 px-2">Giá trị CV</th>
+                        <th className="py-3 px-2 text-center">Đạt/Không</th>
+                        <th className="py-3 px-2">AI Lý luận</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-850">
+                      {criteria.map(crit => {
+                        const res = activeCandidate.screeningResults.find(r => r.criterionId === crit.id) || { passed: false, valueFound: 'N/A', confidence: 'Medium', reasoning: 'N/A' };
+                        return (
+                          <tr key={crit.id} className="hover:bg-slate-900/30 transition-all group">
+                            <td className="py-3 px-2 max-w-[200px]"><div className="font-bold text-slate-200">{crit.name}</div><div className="text-[10px] text-slate-500 truncate">{crit.description}</div></td>
+                            <td className="py-3 px-2"><span className={`px-2 py-0.5 rounded text-[8px] font-bold ${crit.isRequired ? 'bg-rose-500/10 text-rose-400 border border-rose-500/10' : 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/10'}`}>{crit.isRequired ? 'Must-have' : 'Preferred'}</span></td>
+                            <td className="py-3 px-2 max-w-[150px] truncate text-slate-300 font-mono text-[10px]">{res.valueFound}</td>
+                            <td className="py-3 px-2 text-center">{res.passed ? <span className="px-2 py-1 bg-emerald-500/10 rounded-lg text-emerald-400 text-[9px] font-bold">Đạt</span> : <span className="px-2 py-1 bg-rose-500/10 rounded-lg text-rose-400 text-[9px] font-bold">Không</span>}</td>
+                            <td className="py-3 px-2"><div className="flex items-center gap-1.5"><span className={`w-1.5 h-1.5 rounded-full ${res.confidence === 'High' ? 'bg-emerald-400' : 'bg-amber-400'}`}></span><span className="text-[10px] text-slate-400 group-hover:text-slate-300">{res.reasoning}</span></div></td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+            {activeCandidate.status === 'Rejected' && (
+              <div className="mt-4 p-3.5 rounded-lg bg-rose-950/20 border border-rose-900/30 text-xs text-rose-300 flex items-start gap-3">
+                <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-bold text-white block mb-0.5">Cảnh Báo Hành Chính</span>
+                  Ứng viên bị loại tự động do thiếu chỉ số **Must-have** bắt buộc.
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Markdown to HTML simple parser for printing
+    const parseMarkdownToHtml = (md) => {
+      if (!md) return "";
+      let html = md;
+
+      // Escape XML characters to prevent breakage
+      html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      // Parse Tables
+      const lines = html.split('\n');
+      let inTable = false;
+      let tableHeaders = [];
+      let tableRows = [];
+      const newLines = [];
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line.startsWith('|') && line.endsWith('|')) {
+          const cols = line.split('|').map(c => c.trim()).filter((c, idx, arr) => idx > 0 && idx < arr.length - 1);
+          if (!inTable) {
+            inTable = true;
+            tableHeaders = cols;
+          } else if (line.includes('---') || line.includes(':---')) {
+            continue; // separator row
+          } else {
+            tableRows.push(cols);
+          }
+        } else {
+          if (inTable) {
+            let tableHtml = '<table class="report-table"><thead><tr>';
+            tableHeaders.forEach(h => {
+              tableHtml += `<th>${h}</th>`;
+            });
+            tableHtml += '</tr></thead><tbody>';
+            tableRows.forEach(row => {
+              tableHtml += '<tr>';
+              row.forEach(cell => {
+                let cellContent = cell;
+                if (cell.includes('🟢') || cell.includes('Passed') || cell.includes('Đạt')) {
+                  cellContent = `<span class="badge badge-passed">${cell}</span>`;
+                } else if (cell.includes('🟡') || cell.includes('Partial') || cell.includes('Cân nhắc')) {
+                  cellContent = `<span class="badge badge-partial">${cell}</span>`;
+                } else if (cell.includes('🔴') || cell.includes('Rejected') || cell.includes('Loại')) {
+                  cellContent = `<span class="badge badge-rejected">${cell}</span>`;
+                }
+                tableHtml += `<td>${cellContent}</td>`;
+              });
+              tableHtml += '</tr>';
+            });
+            tableHtml += '</tbody></table>';
+            newLines.push(tableHtml);
+            inTable = false;
+            tableHeaders = [];
+            tableRows = [];
+          }
+          newLines.push(lines[i]);
+        }
+      }
+      if (inTable) {
+        let tableHtml = '<table class="report-table"><thead><tr>';
+        tableHeaders.forEach(h => {
+          tableHtml += `<th>${h}</th>`;
+        });
+        tableHtml += '</tr></thead><tbody>';
+        tableRows.forEach(row => {
+          tableHtml += '<tr>';
+          row.forEach(cell => {
+            let cellContent = cell;
+            if (cell.includes('🟢') || cell.includes('Passed') || cell.includes('Đạt')) {
+              cellContent = `<span class="badge badge-passed">${cell}</span>`;
+            } else if (cell.includes('🟡') || cell.includes('Partial') || cell.includes('Cân nhắc')) {
+              cellContent = `<span class="badge badge-partial">${cell}</span>`;
+            } else if (cell.includes('🔴') || cell.includes('Rejected') || cell.includes('Loại')) {
+              cellContent = `<span class="badge badge-rejected">${cell}</span>`;
+            }
+            tableHtml += `<td>${cellContent}</td>`;
+          });
+          tableHtml += '</tr>';
+        });
+        tableHtml += '</tbody></table>';
+        newLines.push(tableHtml);
+      }
+
+      html = newLines.join('\n');
+
+      // Headers
+      html = html.replace(/^# (.*?)$/gm, '<h1>$1</h1>');
+      html = html.replace(/^## (.*?)$/gm, '<h2>$1</h2>');
+      html = html.replace(/^### (.*?)$/gm, '<h3>$1</h3>');
+      html = html.replace(/^#### (.*?)$/gm, '<h4>$1</h4>');
+
+      // Bold and Italic
+      html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+      // Bullet Lists
+      html = html.replace(/^[-\*]\s+(.*?)$/gm, '<li>$1</li>');
+
+      // Wrap lists
+      const lines2 = html.split('\n');
+      let inList = false;
+      const finalLines = [];
+      for (let i = 0; i < lines2.length; i++) {
+        const line = lines2[i];
+        if (line.trim().startsWith('<li>')) {
+          if (!inList) {
+            finalLines.push('<ul>');
+            inList = true;
+          }
+          finalLines.push(line);
+        } else {
+          if (inList) {
+            finalLines.push('</ul>');
+            inList = false;
+          }
+          finalLines.push(line);
+        }
+      }
+      if (inList) {
+        finalLines.push('</ul>');
+      }
+
+      html = finalLines.join('\n');
+
+      // Wrap paragraphs
+      const lines3 = html.split('\n');
+      const paragraphs = [];
+      for (let i = 0; i < lines3.length; i++) {
+        const line = lines3[i].trim();
+        if (!line) {
+          paragraphs.push('');
+          continue;
+        }
+        if (line.startsWith('<h') || line.startsWith('<ul') || line.startsWith('</ul') || line.startsWith('<li') || line.startsWith('<table') || line.startsWith('<thead') || line.startsWith('<tbody') || line.startsWith('<tr') || line.startsWith('<th') || line.startsWith('<td') || line.startsWith('</table') || line.startsWith('</thead') || line.startsWith('</tbody') || line.startsWith('</tr') || line.startsWith('</th') || line.startsWith('</td')) {
+          paragraphs.push(lines3[i]);
+        } else {
+          paragraphs.push(`<p>${lines3[i]}</p>`);
+        }
+      }
+
+      return paragraphs.join('\n');
+    };
+
+    // App Component (Unified)
+    function App() {
+      const [activeTab, setActiveTab] = useState('overview');
+      const [criteria, setCriteria] = useState(INITIAL_CRITERIA);
+      const [candidates, setCandidates] = useState(INITIAL_CANDIDATES);
+      const [selectedCandidateId, setSelectedCandidateId] = useState('cand1');
+      const [hoveredCandidateId, setHoveredCandidateId] = useState(null);
+      const [chartFilter, setChartFilter] = useState('all');
+      const [apiKey, setApiKey] = useState(() => localStorage.getItem('gemini_api_key') || '');
+      const [showSettings, setShowSettings] = useState(false);
+      const [currentTime, setCurrentTime] = useState('');
+
+      // State for recruitment batches
+      const [batches, setBatches] = useState(() => {
+        try {
+          const saved = localStorage.getItem('recruitment_batches');
+          return saved ? JSON.parse(saved) : [];
+        } catch (e) {
+          console.error("Lỗi đọc batches từ localStorage:", e);
+          return [];
+        }
+      });
+      const [selectedBatchId, setSelectedBatchId] = useState(() => {
+        try {
+          const saved = localStorage.getItem('recruitment_selected_batch_id');
+          return saved || '';
+        } catch (e) {
+          return '';
+        }
+      });
+      const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+      const [showCreateForm, setShowCreateForm] = useState(false);
+      const [newBatchName, setNewBatchName] = useState('');
+      const [newBatchDesc, setNewBatchDesc] = useState('');
+
+      const saveBatches = (newBatches) => {
+        setBatches(newBatches);
+        localStorage.setItem('recruitment_batches', JSON.stringify(newBatches));
+      };
+
+      const handleSelectBatch = (id) => {
+        setSelectedBatchId(id);
+        localStorage.setItem('recruitment_selected_batch_id', id);
+      };
+
+      const handleCreateBatch = (name, description) => {
+        const newBatch = {
+          id: 'batch_' + Date.now(),
+          name: name || `Đợt tuyển dụng ${new Date().toLocaleDateString('vi-VN')}`,
+          description: description || '',
+          createdAt: new Date().toISOString(),
+          candidates: [],
+          report: ''
+        };
+        const updated = [...batches, newBatch];
+        saveBatches(updated);
+        handleSelectBatch(newBatch.id);
+        return newBatch;
+      };
+
+      const handleDeleteBatch = (batchId) => {
+        if (!confirm("Bạn có chắc chắn muốn xóa đợt tuyển dụng này và toàn bộ kết quả lưu trữ trong đó?")) return;
+        const updated = batches.filter(b => b.id !== batchId);
+        saveBatches(updated);
+        if (selectedBatchId === batchId) {
+          handleSelectBatch(updated.length > 0 ? updated[0].id : '');
+        }
+      };
+
+      const handleSaveCandidateToBatch = (batchId, candidate) => {
+        const updated = batches.map(b => {
+          if (b.id === batchId) {
+            const filteredCands = b.candidates.filter(c => c.id !== candidate.id && c.name !== candidate.name);
+            return {
+              ...b,
+              candidates: [...filteredCands, candidate]
+            };
+          }
+          return b;
+        });
+        saveBatches(updated);
+      };
+
+      const handleRemoveCandidateFromBatch = (batchId, candidateId) => {
+        if (!confirm("Bạn có chắc chắn muốn xóa ứng viên này khỏi đợt tuyển dụng?")) return;
+        const updated = batches.map(b => {
+          if (b.id === batchId) {
+            return {
+              ...b,
+              candidates: b.candidates.filter(c => c.id !== candidateId)
+            };
+          }
+          return b;
+        });
+        saveBatches(updated);
+      };
+
+      const handleUpdateBatchReport = (batchId, reportText) => {
+        const updated = batches.map(b => {
+          if (b.id === batchId) {
+            return {
+              ...b,
+              report: reportText
+            };
+          }
+          return b;
+        });
+        saveBatches(updated);
+      };
+
+      const handleExportData = () => {
+        const dataStr = JSON.stringify(batches, null, 2);
+        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+        const exportFileDefaultName = `talent-ai-lens-batches-${new Date().toISOString().slice(0,10)}.json`;
+        
+        const linkElement = document.createElement('a');
+        linkElement.setAttribute('href', dataUri);
+        linkElement.setAttribute('download', exportFileDefaultName);
+        linkElement.click();
+      };
+      
+      const handleImportData = (e) => {
+        const fileReader = new FileReader();
+        const file = e.target.files[0];
+        if (!file) return;
+        fileReader.onload = (event) => {
+          try {
+            const parsed = JSON.parse(event.target.result);
+            if (Array.isArray(parsed)) {
+              const isValid = parsed.every(b => b.id && b.name && Array.isArray(b.candidates));
+              if (isValid) {
+                saveBatches(parsed);
+                if (parsed.length > 0) {
+                  handleSelectBatch(parsed[0].id);
+                }
+                alert("Nhập dữ liệu thành công!");
+              } else {
+                alert("Tệp JSON không đúng định dạng đợt tuyển dụng.");
+              }
+            } else {
+              alert("Tệp JSON phải chứa danh sách các đợt tuyển dụng.");
+            }
+          } catch (err) {
+            alert("Lỗi đọc tệp: " + err.message);
+          }
+        };
+        fileReader.readAsText(file);
+      };
+
+      const generateOfflineReport = (batch) => {
+        const total = batch.candidates.length;
+        const passed = batch.candidates.filter(c => c.status === 'Passed').length;
+        const partial = batch.candidates.filter(c => c.status === 'Partial').length;
+        const rejected = batch.candidates.filter(c => c.status === 'Rejected').length;
+        const sortedCands = [...batch.candidates].sort((a, b) => b.matchRate - a.matchRate);
+        
+        let md = `# BÁO CÁO KẾT QUẢ SÀNG LỌC HỒ SƠ\n`;
+        md += `## Đợt tuyển dụng: ${batch.name}\n`;
+        if (batch.description) md += `*Mô tả: ${batch.description}*\n`;
+        md += `*Thời gian lập báo cáo: ${new Date().toLocaleDateString('vi-VN')}*\n\n`;
+        
+        md += `### 1. Tổng quan đợt tuyển dụng\n`;
+        md += `- **Tổng số ứng viên đã quét**: ${total}\n`;
+        md += `- **Đạt yêu cầu (Passed)**: ${passed} (${Math.round(passed/total*100 || 0)}%)\n`;
+        md += `- **Cần xem xét thêm (Partial)**: ${partial} (${Math.round(partial/total*100 || 0)}%)\n`;
+        md += `- **Không phù hợp (Rejected)**: ${rejected} (${Math.round(rejected/total*100 || 0)}%)\n\n`;
+        
+        md += `### 2. Danh sách so sánh ứng viên\n\n`;
+        md += `| Họ và tên | Vị trí | Độ trùng khớp | Trạng thái | Tools | Teach | Teams |\n`;
+        md += `| :--- | :--- | :---: | :---: | :---: | :---: | :---: |\n`;
+        sortedCands.forEach(c => {
+          const statusText = c.status === 'Passed' ? '🟢 Đạt' : c.status === 'Partial' ? '🟡 Cân nhắc' : '🔴 Loại';
+          md += `| ${c.name} | ${c.role} | ${c.matchRate}% | ${statusText} | ${c.toolsScore}% | ${c.teachScore}% | ${c.teamsScore}% |\n`;
+        });
+        md += `\n`;
+        
+        md += `### 3. Đánh giá chi tiết & Đề xuất hành động\n\n`;
+        sortedCands.forEach(c => {
+          md += `#### 👤 ${c.name} (${c.matchRate}% - ${c.status === 'Passed' ? 'Đạt' : c.status === 'Partial' ? 'Cân nhắc' : 'Loại'})\n`;
+          md += `- **Tóm tắt chuyên môn**: ${c.summary}\n`;
+          md += `- **Điểm mạnh**: ${c.pros.join(', ') || 'Chưa ghi nhận'}\n`;
+          md += `- **Cảnh báo/Hạn chế**: ${c.cons.join(', ') || 'Không có cảnh báo nghiêm trọng'}\n`;
+          if (c.status === 'Passed') {
+            md += `- **Khuyến nghị**: Mời tham gia vòng phỏng vấn chuyên môn ngay lập tức.\n`;
+          } else if (c.status === 'Partial') {
+            md += `- **Khuyến nghị**: Cần đánh giá kỹ năng chuyên môn hoặc hồ sơ bổ sung trước khi đưa ra quyết định.\n`;
+          } else {
+            md += `- **Khuyến nghị**: Loại khỏi danh sách phỏng vấn do không đạt các điều kiện bắt buộc.\n`;
+          }
+          md += `\n`;
+        });
+        
+        md += `### 4. Kết luận chung & Kế hoạch tiếp theo\n`;
+        md += `- Lập lịch phỏng vấn cho nhóm ứng viên **Đạt** sớm nhất.\n`;
+        md += `- Liên hệ nhóm **Cân nhắc** nếu cần bổ sung chỉ tiêu.\n`;
+        md += `- Lưu trữ nhóm **Loại** vào kho dữ liệu tham khảo sau.\n`;
+        
+        return md;
+      };
+
+      const handleGenerateBatchReport = async (batchId) => {
+        const batch = batches.find(b => b.id === batchId);
+        if (!batch) return;
+        if (batch.candidates.length === 0) {
+          alert("Không có ứng viên nào để lập báo cáo. Hãy quay lại Phân Tích CV và lưu ứng viên vào đợt tuyển dụng này.");
+          return;
+        }
+
+        if (!apiKey) {
+          // Fallback template
+          const reportText = generateOfflineReport(batch);
+          handleUpdateBatchReport(batchId, reportText);
+          return;
+        }
+
+        setIsGeneratingReport(true);
+        try {
+          const candidateSummaryList = batch.candidates.map((c, index) => {
+            return `${index + 1}. Họ tên: ${c.name}
+- Vị trí: ${c.role}
+- Trạng thái: ${c.status === 'Passed' ? 'Đạt (Passed)' : c.status === 'Partial' ? 'Cân nhắc (Partial)' : 'Loại (Rejected)'}
+- Độ trùng khớp: ${c.matchRate}%
+- Điểm Tools: ${c.toolsScore}%, Teach: ${c.teachScore}%, Teams: ${c.teamsScore}%
+- Tóm tắt: ${c.summary}
+- Điểm mạnh: ${c.pros.join(', ')}
+- Điểm yếu/Cảnh báo: ${c.cons.join(', ')}`;
+          }).join('\n\n');
+
+          const prompt = `Bạn là một chuyên gia tuyển dụng cao cấp của trường Cao Đẳng Việt Mỹ.
+Hãy lập một báo cáo tuyển dụng chuyên nghiệp bằng tiếng Việt (định dạng Markdown) cho đợt tuyển dụng: "${batch.name}".
+Mô tả đợt tuyển dụng: ${batch.description || 'Không có mô tả'}
+
+Dưới đây là danh sách ứng viên đã được sàng lọc trong đợt tuyển dụng này:
+${candidateSummaryList}
+
+Yêu cầu báo cáo phải bao gồm:
+1. **Tổng quan đợt tuyển dụng**: Số lượng ứng viên, tỷ lệ Đạt/Cân nhắc/Loại, nhận xét chung về chất lượng hồ sơ nhận được.
+2. **Bảng so sánh tổng hợp ứng viên** (dạng bảng Markdown: Họ tên, Vị trí, Độ trùng khớp, Trạng thái quyết định).
+3. **Đánh giá chi tiết từng ứng viên**: Phân tích ngắn gọn điểm mạnh, điểm yếu và mức độ phù hợp với tiêu chuẩn 3 trụ cột (Tools - Nghiệp vụ chuyên môn/Công cụ, Teach - Nghiệp vụ sư phạm, Teams - Hội nhập/Lý lịch).
+4. **Đề xuất & Khuyến nghị tiếp theo**: Ai nên được mời phỏng vấn ngay, ai cần kiểm tra thêm, lộ trình tiếp theo của đợt tuyển dụng.
+
+Viết báo cáo chuyên nghiệp, rõ ràng bằng tiếng Việt, định dạng chuẩn Markdown.`;
+
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          });
+
+          if (!res.ok) throw new Error(`Lỗi Gemini API: HTTP ${res.status}`);
+          const data = await res.json();
+          const reportText = data.candidates[0].content.parts[0].text.trim();
+          handleUpdateBatchReport(batchId, reportText);
+
+        } catch (err) {
+          console.error("Lỗi tạo báo cáo AI:", err);
+          alert("Lỗi kết nối Gemini AI. Đã tự động tạo báo cáo theo mẫu cục bộ.");
+          const reportText = generateOfflineReport(batch);
+          handleUpdateBatchReport(batchId, reportText);
+        } finally {
+          setIsGeneratingReport(false);
+        }
+      };
+
+      const handleSaveApiKey = (key) => {
+        setApiKey(key);
+        localStorage.setItem('gemini_api_key', key);
+        setShowSettings(false);
+      };
+
+      const handleAddCandidate = (cand) => {
+        setCandidates(prev => {
+          const f = prev.filter(c => c.name !== cand.name);
+          return [...f, cand];
+        });
+        setSelectedCandidateId(cand.id);
+      };
+
+      const selectedCandidate = candidates.find(c => c.id === selectedCandidateId) || candidates[0];
+
+      const totalCands = candidates.length;
+      const passedCands = candidates.filter(c => c.status === 'Passed').length;
+      const partialCands = candidates.filter(c => c.status === 'Partial').length;
+      const failedCands = candidates.filter(c => c.status === 'Rejected').length;
+      const avgRate = Math.round(candidates.reduce((a, c) => a + c.matchRate, 0) / (totalCands || 1));
+
+      return (
+        <div className="flex flex-col min-h-screen bg-[#080c14] text-slate-100 font-sans">
+          
+          <header className="sticky top-0 z-40 w-full border-b border-slate-800 bg-[#0b101c]/80 backdrop-blur-md px-6 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-emerald-400 flex items-center justify-center shadow-lg">
+                <Sparkles className="w-5 h-5 text-white animate-pulse" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h1 className="text-lg font-bold tracking-tight text-white">TALENT AI LENS</h1>
+                  <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">PRO v1.2</span>
+                  <span className="px-2 py-0.5 text-[10px] font-semibold rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">VIỆT MỸ COLLEGE</span>
+                </div>
+                <p className="text-xs text-slate-400">Hệ thống phân tích và lọc hồ sơ giảng viên thông minh</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <nav className="flex items-center bg-slate-900/60 p-1 rounded-lg border border-slate-800">
+                <button onClick={() => setActiveTab('overview')} className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${activeTab === 'overview' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>Đối Sánh & Biểu Đồ</button>
+                <button onClick={() => setActiveTab('criteria')} className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${activeTab === 'criteria' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>Tiêu Chí Sàng Lọc</button>
+                <button onClick={() => setActiveTab('screener')} className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${activeTab === 'screener' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>Phân Tích CV</button>
+                <button onClick={() => setActiveTab('batches')} className={`px-4 py-1.5 rounded-md text-xs font-semibold transition-all ${activeTab === 'batches' ? 'bg-indigo-600 text-white' : 'text-slate-400'}`}>Đợt Tuyển Dụng & Báo Cáo</button>
+              </nav>
+              <button onClick={() => setShowSettings(!showSettings)} className="p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-white" title="Cài đặt API Key">
+                <Settings className="w-4 h-4" />
+              </button>
+            </div>
+          </header>
+
+          {showSettings && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+              <div className="w-full max-w-md bg-[#0f172a] rounded-xl border border-slate-800 p-6 shadow-2xl">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <Key className="w-5 h-5 text-indigo-400" />
+                    <h3 className="text-base font-bold text-white">Cài đặt Gemini API Key</h3>
+                  </div>
+                  <button onClick={() => setShowSettings(false)} className="text-slate-400 hover:text-white">✕</button>
+                </div>
+                <p className="text-xs text-slate-400 mb-4">Nhập mã API Key Gemini của bạn để kích hoạt chấm điểm trực tiếp. Nếu không có khóa, hệ thống sử dụng bộ phân tích mock chất lượng cao.</p>
+                <input type="password" placeholder="AIzaSy..." id="api-key-input" defaultValue={apiKey} className="w-full bg-[#080c14] border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-205 focus:outline-none focus:border-indigo-500 mb-5 font-mono" />
+                <div className="flex justify-end gap-3 text-xs font-semibold">
+                  <button onClick={() => setShowSettings(false)} className="px-4 py-2 rounded-lg bg-slate-800 text-slate-300">Hủy</button>
+                  <button onClick={() => {
+                    const v = document.getElementById('api-key-input').value;
+                    handleSaveApiKey(v);
+                  }} className="px-4 py-2 rounded-lg bg-indigo-600 text-white">Lưu Khóa API</button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <main className="flex-1 p-6 max-w-[1600px] w-full mx-auto space-y-6">
+            
+            <section className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between shadow-sm bento-card">
+                <div className="flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider">Tổng Ứng Viên</span><Users className="w-4 h-4 text-indigo-400" /></div>
+                <div className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-black text-white font-mono">{totalCands}</span></div>
+              </div>
+              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between shadow-sm bento-card">
+                <div className="flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Rất Phù Hợp</span><CheckCircle2 className="w-4 h-4 text-emerald-400" /></div>
+                <div className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-black text-emerald-400 font-mono">{passedCands}</span><span className="text-xs font-semibold text-emerald-500">{Math.round((passedCands/totalCands)*100)}%</span></div>
+              </div>
+              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between shadow-sm bento-card">
+                <div className="flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider text-amber-400">Một phần</span><AlertCircle className="w-4 h-4 text-amber-400" /></div>
+                <div className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-black text-amber-400 font-mono">{partialCands}</span><span className="text-xs font-semibold text-amber-500">{Math.round((partialCands/totalCands)*100)}%</span></div>
+              </div>
+              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between shadow-sm bento-card">
+                <div className="flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider text-rose-500">Không Phù Hợp</span><XCircle className="w-4 h-4 text-rose-500" /></div>
+                <div className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-black text-rose-500 font-mono">{failedCands}</span><span className="text-xs font-semibold text-rose-500">{Math.round((failedCands/totalCands)*100)}%</span></div>
+              </div>
+              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between shadow-sm bento-card">
+                <div className="flex items-center justify-between text-slate-500"><span className="text-xs font-bold uppercase tracking-wider">Khớp Chỉ Số TB</span><Layers className="w-4 h-4 text-emerald-400" /></div>
+                <div className="mt-2 flex items-baseline gap-2"><span className="text-3xl font-black text-white font-mono glow-text-emerald">{avgRate}%</span></div>
+              </div>
+            </section>
+
+            {activeTab === 'overview' && (
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <div className="lg:col-span-2 bg-[#0b1120] border border-slate-800/90 rounded-xl p-6 shadow-sm">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+                    <div>
+                      <h3 className="text-base font-bold text-white">Biểu đồ Đối sánh Trụ cột (Tools - Teach - Teams)</h3>
+                      <p className="text-xs text-slate-400">Phân tích năng lực chuyên môn, sư phạm và sự tương hợp lý lịch</p>
+                    </div>
+                    <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-lg border border-slate-800 text-xs">
+                      <button onClick={() => setChartFilter('all')} className={`px-3 py-1 rounded transition-all ${chartFilter === 'all' ? 'bg-indigo-600 text-white font-semibold' : 'text-slate-400'}`}>Tất cả (Side-by-Side)</button>
+                      <button onClick={() => setChartFilter('tools')} className={`px-3 py-1 rounded transition-all ${chartFilter === 'tools' ? 'bg-[#6366f1] text-white font-semibold' : 'text-slate-400'}`}>Tools</button>
+                      <button onClick={() => setChartFilter('teach')} className={`px-3 py-1 rounded transition-all ${chartFilter === 'teach' ? 'bg-[#10b981] text-white font-semibold' : 'text-slate-400'}`}>Teach</button>
+                      <button onClick={() => setChartFilter('teams')} className={`px-3 py-1 rounded transition-all ${chartFilter === 'teams' ? 'bg-[#f59e0b] text-white font-semibold' : 'text-slate-400'}`}>Teams</button>
+                    </div>
+                  </div>
+
+                  <div className="w-full h-80 relative bg-slate-950/40 rounded-xl border border-slate-900/60 p-4 flex items-center justify-center">
+                    <svg viewBox="0 0 600 300" className="w-full h-full">
+                      {[0, 25, 50, 75, 100].map(val => {
+                        const y = 250 - (val * 2);
+                        return (
+                          <g key={val}>
+                            <line x1="50" y1={y} x2="560" y2={y} stroke="#1e293b" strokeWidth="1" strokeDasharray="3,3" />
+                            <text x="25" y={y + 4} fill="#64748b" fontSize="10" className="font-mono">{val}%</text>
+                          </g>
+                        );
+                      })}
+
+                      {candidates.map((cand, idx) => {
+                        const groupWidth = 140;
+                        const startX = 75 + idx * (groupWidth + 30);
+                        const isHovered = hoveredCandidateId === cand.id;
+                        const isSelected = selectedCandidateId === cand.id;
+
+                        const toolsH = cand.toolsScore * 2;
+                        const teachH = cand.teachScore * 2;
+                        const teamsH = cand.teamsScore * 2;
+
+                        const singleBarWidth = chartFilter === 'all' ? 24 : 60;
+
+                        return (
+                          <g key={cand.id} onMouseEnter={() => setHoveredCandidateId(cand.id)} onMouseLeave={() => setHoveredCandidateId(null)} onClick={() => setSelectedCandidateId(cand.id)} className="cursor-pointer">
+                            {(isHovered || isSelected) && (
+                              <rect x={startX - 10} y="30" width={groupWidth + 20} height="230" fill="rgba(99, 102, 241, 0.04)" stroke={isSelected ? 'rgba(99, 102, 241, 0.2)' : 'transparent'} rx="8" />
+                            )}
+                            <text x={startX + groupWidth / 2} y="275" textAnchor="middle" fill={isSelected ? '#ffffff' : '#94a3b8'} fontSize="11" fontWeight={isSelected ? 'bold' : 'normal'}>
+                              {cand.name.split(' ').slice(-2).join(' ')}
+                            </text>
+
+                            {chartFilter === 'all' ? (
+                              <g>
+                                <rect x={startX} y={250 - toolsH} width={24} height={toolsH} fill="url(#toolsGrad)" rx="3" opacity={hoveredCandidateId && hoveredCandidateId !== cand.id ? 0.4 : 1} />
+                                <rect x={startX + 30} y={250 - teachH} width={24} height={teachH} fill="url(#teachGrad)" rx="3" opacity={hoveredCandidateId && hoveredCandidateId !== cand.id ? 0.4 : 1} />
+                                <rect x={startX + 60} y={250 - teamsH} width={24} height={teamsH} fill="url(#teamsGrad)" rx="3" opacity={hoveredCandidateId && hoveredCandidateId !== cand.id ? 0.4 : 1} />
+                                {(isHovered || isSelected) && (
+                                  <g>
+                                    <text x={startX + 12} y={244 - toolsH} textAnchor="middle" fill="#818cf8" fontSize="9" fontWeight="bold" className="font-mono">{cand.toolsScore}</text>
+                                    <text x={startX + 42} y={244 - teachH} textAnchor="middle" fill="#34d399" fontSize="9" fontWeight="bold" className="font-mono">{cand.teachScore}</text>
+                                    <text x={startX + 72} y={244 - teamsH} textAnchor="middle" fill="#fbbf24" fontSize="9" fontWeight="bold" className="font-mono">{cand.teamsScore}</text>
+                                  </g>
+                                )}
+                              </g>
+                            ) : (
+                              <g>
+                                {chartFilter === 'tools' && <rect x={startX + groupWidth / 2 - 30} y={250 - toolsH} width={60} height={toolsH} fill="url(#toolsGrad)" rx="4" />}
+                                {chartFilter === 'teach' && <rect x={startX + groupWidth / 2 - 30} y={250 - teachH} width={60} height={teachH} fill="url(#teachGrad)" rx="4" />}
+                                {chartFilter === 'teams' && <rect x={startX + groupWidth / 2 - 30} y={250 - teamsH} width={60} height={teamsH} fill="url(#teamsGrad)" rx="4" />}
+                                <text x={startX + groupWidth / 2} y={(chartFilter === 'tools' ? 242-toolsH : chartFilter === 'teach' ? 242-teachH : 242-teamsH)} textAnchor="middle" fill={chartFilter === 'tools' ? '#818cf8' : chartFilter === 'teach' ? '#34d399' : '#fbbf24'} fontSize="11" fontWeight="bold" className="font-mono">
+                                  {chartFilter === 'tools' ? cand.toolsScore : chartFilter === 'teach' ? cand.teachScore : cand.teamsScore}%
+                                </text>
+                              </g>
+                            )}
+                          </g>
+                        );
+                      })}
+                      <defs>
+                        <linearGradient id="toolsGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#6366f1" /><stop offset="100%" stopColor="#4f46e5" /></linearGradient>
+                        <linearGradient id="teachGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981" /><stop offset="100%" stopColor="#059669" /></linearGradient>
+                        <linearGradient id="teamsGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f59e0b" /><stop offset="100%" stopColor="#d97706" /></linearGradient>
+                      </defs>
+                    </svg>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-6 mt-4 text-xs font-semibold">
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-indigo-500"></span><span>Tools (Mỹ thuật & Công cụ)</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-emerald-500"></span><span>Teach (Nghiệp vụ Sư phạm)</span></div>
+                    <div className="flex items-center gap-2"><span className="w-3 h-3 rounded bg-amber-500"></span><span>Teams (Hội nhập & Lý lịch)</span></div>
+                  </div>
+                </div>
+
+                <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-base font-bold text-white mb-4">Danh sách Đối sánh</h3>
+                    <div className="space-y-3">
+                      {candidates.map(cand => {
+                        const isSelected = selectedCandidateId === cand.id;
+                        const isHovered = hoveredCandidateId === cand.id;
+                        return (
+                          <div key={cand.id} onClick={() => setSelectedCandidateId(cand.id)} onMouseEnter={() => setHoveredCandidateId(cand.id)} onMouseLeave={() => setHoveredCandidateId(null)} className={`p-4 rounded-xl border transition-all cursor-pointer ${isSelected ? 'bg-slate-900 border-indigo-500/50 shadow-md' : 'bg-slate-950/20 border-slate-800/70 hover:border-slate-800'}`}>
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <span className="text-xl">{cand.avatar}</span>
+                                <div>
+                                  <h4 className="text-sm font-bold text-white">{cand.name}</h4>
+                                  <p className="text-[10px] text-slate-400 font-mono uppercase">{cand.role}</p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <span className={`text-sm font-black font-mono ${cand.status === 'Passed' ? 'text-emerald-400' : cand.status === 'Partial' ? 'text-amber-400' : 'text-rose-500'}`}>{cand.matchRate}%</span>
+                                <p className="text-[9px] text-slate-500 font-medium">khớp</p>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2 mt-3 text-[9px] text-slate-400 font-semibold">
+                              <div><div className="flex justify-between"><span>Tools</span><span>{cand.toolsScore}%</span></div><div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden mt-0.5"><div className="h-full bg-indigo-500" style={{ width: `${cand.toolsScore}%` }}></div></div></div>
+                              <div><div className="flex justify-between"><span>Teach</span><span>{cand.teachScore}%</span></div><div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden mt-0.5"><div className="h-full bg-emerald-500" style={{ width: `${cand.teachScore}%` }}></div></div></div>
+                              <div><div className="flex justify-between"><span>Teams</span><span>{cand.teamsScore}%</span></div><div className="w-full h-1 bg-slate-950 rounded-full overflow-hidden mt-0.5"><div className="h-full bg-amber-500" style={{ width: `${cand.teamsScore}%` }}></div></div></div>
+                            </div>
+                            <div className="flex items-center justify-between mt-3 pt-2 border-t border-slate-800/60">
+                              <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${cand.status === 'Passed' ? 'bg-emerald-500/10 text-emerald-400' : cand.status === 'Partial' ? 'bg-amber-500/10 text-amber-400' : 'bg-rose-500/10 text-rose-400'}`}>{cand.status === 'Passed' ? 'ĐẠT SÀN' : cand.status === 'Partial' ? 'CÂN NHẮC' : 'KHÔNG ĐẠT'}</span>
+                              <button onClick={(e) => { e.stopPropagation(); setSelectedCandidateId(cand.id); setActiveTab('screener'); }} className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300">Hồ sơ chi tiết →</button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="mt-6 p-4 rounded-lg bg-indigo-950/20 border border-indigo-900/30 text-xs text-indigo-300 flex items-start gap-3">
+                    <AlertCircle className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />
+                    <div><span className="font-bold text-white block mb-0.5">Chính Sách Tuyển Dụng Việt Mỹ</span>Chỉ ứng viên đạt đủ các chỉ số bắt buộc (Must-have) mới chuyển tiếp sang vòng sau.</div>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {activeTab === 'criteria' && (
+              <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-6 shadow-sm max-w-4xl mx-auto">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-800">
+                  <div>
+                    <h3 className="text-base font-bold text-white">Trình Quản lý Tiêu chí Sàng lọc (LinkedIn Format)</h3>
+                    <p className="text-xs text-slate-400">Quy định các điều kiện cứng và chỉ số cộng điểm trước khi quét CV</p>
+                  </div>
+                  <button onClick={() => {
+                    const newCrit = { id: `c_${Date.now()}`, name: 'Tiêu chí mới', description: 'Nhập mô tả...', isRequired: false, key: 'custom' };
+                    setCriteria([...criteria, newCrit]);
+                  }} className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold flex items-center gap-1.5">
+                    <Plus /> Thêm tiêu chí
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {criteria.map((crit, index) => (
+                    <div key={crit.id} className="p-4 rounded-xl bg-slate-900/40 border border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                      <div className="flex items-start gap-3 flex-1">
+                        <span className="w-6 h-6 rounded bg-slate-800 text-[10px] font-bold font-mono text-slate-400 flex items-center justify-center shrink-0 mt-0.5">{String(index + 1).padStart(2, '0')}</span>
+                        <div className="space-y-1 flex-1">
+                          <input type="text" value={crit.name} onChange={e => { const u = [...criteria]; u[index].name = e.target.value; setCriteria(u); }} className="bg-transparent border-b border-transparent hover:border-slate-700 focus:border-indigo-500 focus:outline-none text-sm font-bold text-white w-full max-w-sm" />
+                          <input type="text" value={crit.description} onChange={e => { const u = [...criteria]; u[index].description = e.target.value; setCriteria(u); }} className="bg-transparent border-b border-transparent hover:border-slate-800 focus:border-indigo-500 focus:outline-none text-xs text-slate-400 w-full" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <button onClick={() => { const u = [...criteria]; u[index].isRequired = !u[index].isRequired; setCriteria(u); }} className={`px-3 py-1 rounded-full text-[10px] font-bold border transition ${crit.isRequired ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'}`}>
+                          {crit.isRequired ? '🔴 Must-have (Bắt buộc)' : '🔵 Preferred (Ưu tiên)'}
+                        </button>
+                        <button onClick={() => { const u = criteria.filter(c => c.id !== crit.id); setCriteria(u); }} className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 hover:text-rose-450 hover:border-rose-500/30">
+                          <Trash2 />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                  <span className="flex items-center gap-1.5"><RefreshCw /> Các tiêu chí sẽ tự động đồng bộ khi quét hồ sơ.</span>
+                  <button onClick={() => setCriteria(INITIAL_CRITERIA)} className="text-indigo-400 hover:text-indigo-300 font-bold">Khôi phục mặc định</button>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'screener' && (
+              <CVScreeningSection 
+                criteria={criteria} 
+                candidates={candidates}
+                selectedCandidateId={selectedCandidateId}
+                setSelectedCandidateId={setSelectedCandidateId}
+                onAddCandidate={handleAddCandidate}
+                apiKey={apiKey}
+                batches={batches}
+                onSaveCandidateToBatch={handleSaveCandidateToBatch}
+              />
+            )}
+
+            {activeTab === 'batches' && (() => {
+              const selectedBatch = batches.find(b => b.id === selectedBatchId);
+              return (
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                  
+                  {/* Left Pane: Batches List & Management */}
+                  <div className="lg:col-span-4 space-y-6">
+                    <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-bold uppercase tracking-wider text-indigo-400">Danh Sách Đợt Tuyển Dụng</h4>
+                        <button 
+                          onClick={() => setShowCreateForm(!showCreateForm)}
+                          className="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white text-[10.5px] font-bold transition flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Đợt mới</span>
+                        </button>
+                      </div>
+
+                      {showCreateForm && (
+                        <div className="p-3.5 rounded-lg bg-slate-950/60 border border-slate-855 space-y-3 text-xs">
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-400 font-bold uppercase block">Tên đợt tuyển dụng</label>
+                            <input 
+                              type="text" 
+                              placeholder="Ví dụ: Đợt Thiết kế Đồ họa Q2-2026" 
+                              value={newBatchName} 
+                              onChange={(e) => setNewBatchName(e.target.value)} 
+                              className="w-full bg-[#080c14] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 font-sans"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[9px] text-slate-400 font-bold uppercase block">Mô tả chi tiết</label>
+                            <textarea 
+                              rows={2} 
+                              placeholder="Yêu cầu, ghi chú về đợt..." 
+                              value={newBatchDesc} 
+                              onChange={(e) => setNewBatchDesc(e.target.value)} 
+                              className="w-full bg-[#080c14] border border-slate-800 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-indigo-500 resize-none font-sans"
+                            />
+                          </div>
+                          <div className="flex justify-end gap-2 text-[10.5px]">
+                            <button 
+                              onClick={() => { setShowCreateForm(false); setNewBatchName(''); setNewBatchDesc(''); }} 
+                              className="px-2.5 py-1 rounded bg-slate-900 border border-slate-800 text-slate-400 font-bold"
+                            >
+                              Hủy
+                            </button>
+                            <button 
+                              onClick={() => {
+                                if (!newBatchName.trim()) {
+                                  alert("Vui lòng nhập tên đợt tuyển dụng.");
+                                  return;
+                                }
+                                handleCreateBatch(newBatchName, newBatchDesc);
+                                setShowCreateForm(false);
+                                setNewBatchName('');
+                                setNewBatchDesc('');
+                              }} 
+                              className="px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold"
+                            >
+                              Lưu lại
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="space-y-2 max-h-[320px] overflow-y-auto pr-1">
+                        {batches.length > 0 ? batches.map(batch => (
+                          <div 
+                            key={batch.id} 
+                            onClick={() => handleSelectBatch(batch.id)}
+                            className={`p-3 rounded-lg border text-left transition cursor-pointer flex items-center justify-between group ${
+                              selectedBatchId === batch.id 
+                                ? 'bg-indigo-600/10 border-indigo-500/80 text-white shadow-sm' 
+                                : 'bg-slate-950 border-slate-900 text-slate-400 hover:border-slate-800 hover:text-slate-300'
+                            }`}
+                          >
+                            <div className="space-y-0.5 truncate flex-1 pr-2">
+                              <div className="flex items-center gap-1.5">
+                                <FolderPlus className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
+                                <span className="font-bold text-xs truncate text-slate-200">{batch.name}</span>
+                              </div>
+                              {batch.description && (
+                                <p className="text-[10px] text-slate-500 truncate">{batch.description}</p>
+                              )}
+                              <div className="flex items-center gap-2 text-[8px] text-slate-500 font-semibold font-mono">
+                                <span>{batch.candidates.length} ứng viên</span>
+                                <span>•</span>
+                                <span>{new Date(batch.createdAt).toLocaleDateString('vi-VN')}</span>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleDeleteBatch(batch.id);
+                              }}
+                              className="p-1 rounded hover:bg-rose-500/20 text-slate-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition"
+                              title="Xóa đợt"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        )) : (
+                          <div className="text-center py-6 text-slate-600 text-xs italic">
+                            Chưa có đợt tuyển dụng nào được tạo.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Backup & Restore Widget */}
+                    <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-3">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Sao Lưu & Khôi Phục</h4>
+                      <p className="text-[10px] text-slate-500 leading-normal">
+                        Xuất toàn bộ cơ sở dữ liệu đợt tuyển dụng thành tệp tin JSON để dự phòng hoặc chuyển thiết bị khác.
+                      </p>
+                      <div className="grid grid-cols-2 gap-2 text-[10.5px]">
+                        <button 
+                          onClick={handleExportData}
+                          className="py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold transition flex items-center justify-center gap-1.5"
+                        >
+                          <Download className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>Xuất Backup</span>
+                        </button>
+                        <button 
+                          onClick={() => document.getElementById('import-batches-file').click()}
+                          className="py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold transition flex items-center justify-center gap-1.5"
+                        >
+                          <UploadCloud className="w-3.5 h-3.5 text-emerald-400" />
+                          <span>Nhập Backup</span>
+                        </button>
+                        <input 
+                          type="file" 
+                          id="import-batches-file" 
+                          accept=".json" 
+                          onChange={handleImportData} 
+                          className="hidden" 
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Pane: Selected Batch Details & Report */}
+                  <div className="lg:col-span-8 space-y-6">
+                    {selectedBatch ? (
+                      <div className="space-y-6">
+                        
+                        {/* Batch Summary */}
+                        <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-4">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="text-base font-bold text-white">{selectedBatch.name}</h3>
+                              <span className="px-2 py-0.5 text-[9px] font-mono font-bold rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                                Đang chọn
+                              </span>
+                            </div>
+                            {selectedBatch.description && (
+                              <p className="text-xs text-slate-400 mt-1 leading-relaxed">{selectedBatch.description}</p>
+                            )}
+                            <div className="text-[9px] text-slate-500 font-medium font-mono mt-1">
+                              Khởi tạo lúc: {new Date(selectedBatch.createdAt).toLocaleString('vi-VN')}
+                            </div>
+                          </div>
+
+                          {/* Stats Grid */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
+                            <div className="bg-slate-950/40 border border-slate-900 rounded-lg p-2.5">
+                              <div className="text-lg font-black text-white font-mono">{selectedBatch.candidates.length}</div>
+                              <div className="text-[8.5px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">Tổng ứng viên</div>
+                            </div>
+                            <div className="bg-emerald-950/10 border border-emerald-900/15 rounded-lg p-2.5">
+                              <div className="text-lg font-black text-emerald-400 font-mono">
+                                {selectedBatch.candidates.filter(c => c.status === 'Passed').length}
+                              </div>
+                              <div className="text-[8.5px] text-emerald-500 font-bold uppercase tracking-wider mt-0.5">🟢 Đạt (Passed)</div>
+                            </div>
+                            <div className="bg-amber-950/10 border border-amber-900/15 rounded-lg p-2.5">
+                              <div className="text-lg font-black text-amber-400 font-mono">
+                                {selectedBatch.candidates.filter(c => c.status === 'Partial').length}
+                              </div>
+                              <div className="text-[8.5px] text-amber-500 font-bold uppercase tracking-wider mt-0.5">🟡 Cân nhắc (Partial)</div>
+                            </div>
+                            <div className="bg-rose-950/10 border border-rose-900/15 rounded-lg p-2.5">
+                              <div className="text-lg font-black text-rose-500 font-mono">
+                                {selectedBatch.candidates.filter(c => c.status === 'Rejected').length}
+                              </div>
+                              <div className="text-[8.5px] text-rose-500 font-bold uppercase tracking-wider mt-0.5">🔴 Loại (Rejected)</div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Candidates Table */}
+                        <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-4">
+                          <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400">Ứng Viên Trong Đợt Tuyển Dụng</h4>
+                          
+                          {selectedBatch.candidates.length > 0 ? (
+                            <div className="overflow-x-auto">
+                              <table className="w-full text-left text-xs">
+                                <thead>
+                                  <tr className="border-b border-slate-800 text-[10px] text-slate-500 font-bold uppercase tracking-wider">
+                                    <th className="py-2.5 px-2">Họ và tên</th>
+                                    <th className="py-2.5 px-2">Vị trí tuyển</th>
+                                    <th className="py-2.5 px-2 text-center">Tỉ lệ khớp</th>
+                                    <th className="py-2.5 px-2">Trạng thái</th>
+                                    <th className="py-2.5 px-2 text-right">Hành động</th>
+                                  </tr>
+                                </thead>
+                                <tbody className="divide-y divide-slate-850/50">
+                                  {selectedBatch.candidates.map(cand => (
+                                    <tr key={cand.id} className="hover:bg-slate-900/20 transition group">
+                                      <td className="py-2.5 px-2 font-bold text-slate-200">{cand.name}</td>
+                                      <td className="py-2.5 px-2 text-slate-400">{cand.role}</td>
+                                      <td className="py-2.5 px-2 text-center font-mono font-bold text-indigo-400">{cand.matchRate}%</td>
+                                      <td className="py-2.5 px-2">
+                                        <span className={`px-2 py-0.5 rounded text-[9px] font-bold ${
+                                          cand.status === 'Passed' 
+                                            ? 'bg-emerald-500/10 text-emerald-400' 
+                                            : cand.status === 'Partial' 
+                                              ? 'bg-amber-500/10 text-amber-400' 
+                                              : 'bg-rose-500/10 text-rose-400'
+                                        }`}>
+                                          {cand.status === 'Passed' ? 'Đạt' : cand.status === 'Partial' ? 'Cân nhắc' : 'Loại'}
+                                        </span>
+                                      </td>
+                                      <td className="py-2.5 px-2 text-right shrink-0">
+                                        <div className="flex items-center justify-end gap-2.5">
+                                          <button 
+                                            onClick={() => {
+                                              setSelectedCandidateId(cand.id);
+                                              setActiveTab('screener');
+                                            }}
+                                            className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300"
+                                          >
+                                            Xem chi tiết
+                                          </button>
+                                          <button 
+                                            onClick={() => handleRemoveCandidateFromBatch(selectedBatchId, cand.id)}
+                                            className="text-[10px] font-bold text-rose-500 hover:text-rose-400"
+                                          >
+                                            Xóa
+                                          </button>
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                          ) : (
+                            <div className="text-center py-8 text-slate-500 text-xs italic bg-slate-950/20 rounded-lg border border-slate-900/60 p-4">
+                              Chưa lưu ứng viên nào vào đợt tuyển dụng này. Hãy sang tab "Phân Tích CV", quét CV ứng viên và bấm nút "Lưu" vào đợt tuyển dụng.
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Report Section */}
+                        <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-5 shadow-sm space-y-4">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-850 pb-3">
+                            <div>
+                              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                                <FileSpreadsheet className="w-4 h-4 text-indigo-400" />
+                                <span>Báo Cáo Tuyển Dụng Tổng Hợp</span>
+                              </h4>
+                              <p className="text-[10.5px] text-slate-500 mt-0.5">
+                                Soạn thảo đánh giá tổng hợp cho đợt tuyển dụng này bằng định dạng Markdown.
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => handleGenerateBatchReport(selectedBatch.id)}
+                                disabled={isGeneratingReport || selectedBatch.candidates.length === 0}
+                                className={`px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1.5 ${
+                                  isGeneratingReport || selectedBatch.candidates.length === 0
+                                    ? 'bg-slate-850 text-slate-500 cursor-not-allowed'
+                                    : 'bg-indigo-600 hover:bg-indigo-500 text-white'
+                                }`}
+                              >
+                                {isGeneratingReport ? (
+                                  <>
+                                    <svg className="animate-spin h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24">
+                                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    <span>Đang biên soạn...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+                                    <span>Tự động lập báo cáo {apiKey ? 'AI' : 'Offline'}</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <textarea 
+                              rows={15}
+                              value={selectedBatch.report || ''}
+                              onChange={(e) => handleUpdateBatchReport(selectedBatch.id, e.target.value)}
+                              placeholder="Nội dung báo cáo (Định dạng Markdown)..."
+                              className="w-full bg-slate-950 border border-slate-855 rounded-lg p-3 text-xs text-slate-300 font-mono focus:outline-none focus:border-indigo-500 resize-y"
+                            />
+                            
+                            <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+                              <span className="text-[10px] text-slate-500">
+                                💡 Nhấn "Tự động lập báo cáo" để hệ thống tự phân tích, thống kê ứng viên và biên soạn.
+                              </span>
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => {
+                                    if (!selectedBatch.report) {
+                                      alert("Báo cáo đang trống.");
+                                      return;
+                                    }
+                                    navigator.clipboard.writeText(selectedBatch.report);
+                                    alert("Đã sao chép báo cáo vào bộ nhớ tạm!");
+                                  }}
+                                  className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold transition flex items-center gap-1.5"
+                                  title="Sao chép văn bản"
+                                >
+                                  <Clipboard className="w-3.5 h-3.5 text-indigo-400" />
+                                  <span>Sao chép</span>
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    const dataStr = selectedBatch.report || '';
+                                    if (!dataStr) {
+                                      alert("Báo cáo đang trống. Hãy soạn hoặc nhấn tự động lập báo cáo trước.");
+                                      return;
+                                    }
+                                    const dataUri = 'data:text/markdown;charset=utf-8,' + encodeURIComponent(dataStr);
+                                    const fileName = `bao-cao-tuyen-dung-${selectedBatch.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}.md`;
+                                    const link = document.createElement('a');
+                                    link.setAttribute('href', dataUri);
+                                    link.setAttribute('download', fileName);
+                                    link.click();
+                                  }}
+                                  className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold transition flex items-center gap-1.5"
+                                  title="Tải báo cáo .md"
+                                >
+                                  <Download className="w-3.5 h-3.5 text-emerald-400" />
+                                  <span>Tải báo cáo (.md)</span>
+                                </button>
+                                <button 
+                                  onClick={() => {
+                                    const reportText = selectedBatch.report || '';
+                                    if (!reportText) {
+                                      alert("Báo cáo đang trống. Hãy soạn hoặc nhấn tự động lập báo cáo trước.");
+                                      return;
+                                    }
+                                    const htmlContent = parseMarkdownToHtml(reportText);
+                                    const printWindow = window.open('', '_blank');
+                                    if (!printWindow) {
+                                      alert("Trình duyệt đã chặn cửa sổ bật lên. Vui lòng cho phép bật lên để in báo cáo.");
+                                      return;
+                                    }
+                                    printWindow.document.write(`
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Báo cáo tuyển dụng - ${selectedBatch.name}</title>
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      line-height: 1.6;
+      color: #1e293b;
+      max-width: 850px;
+      margin: 40px auto;
+      padding: 0 30px;
+    }
+    h1 {
+      font-size: 26px;
+      color: #1e3a8a;
+      border-bottom: 3px solid #3b82f6;
+      padding-bottom: 10px;
+      margin-top: 30px;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    h2 {
+      font-size: 20px;
+      color: #1d4ed8;
+      border-bottom: 1.5px solid #e2e8f0;
+      padding-bottom: 6px;
+      margin-top: 28px;
+      margin-bottom: 15px;
+    }
+    h3 {
+      font-size: 16px;
+      color: #0f172a;
+      margin-top: 22px;
+      margin-bottom: 12px;
+      border-left: 4px solid #3b82f6;
+      padding-left: 10px;
+    }
+    h4 {
+      font-size: 14px;
+      color: #1e293b;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    p, li {
+      font-size: 13.5px;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+    ul {
+      padding-left: 22px;
+      margin-bottom: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 22px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    th, td {
+      border: 1px solid #cbd5e1;
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 13px;
+    }
+    th {
+      background-color: #f1f5f9;
+      font-weight: bold;
+      color: #1e293b;
+    }
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: bold;
+      text-align: center;
+    }
+    .badge-passed {
+      background-color: #dcfce7;
+      color: #166534;
+    }
+    .badge-partial {
+      background-color: #fef9c3;
+      color: #854d0e;
+    }
+    .badge-rejected {
+      background-color: #fee2e2;
+      color: #991b1b;
+    }
+    .no-print-btn {
+      padding: 10px 20px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: background-color 0.2s;
+    }
+    .no-print-btn:hover {
+      background-color: #4338ca;
+    }
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+        color: #000;
+        max-width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+      @page {
+        size: A4;
+        margin: 2cm;
+      }
+      h1, h2, h3, table {
+        page-break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;" class="no-print">
+    <div style="font-size: 12px; color: #64748b;">Trình xem báo cáo & Xuất PDF</div>
+    <button onclick="window.print()" class="no-print-btn">
+      🖨️ In / Lưu PDF
+    </button>
+  </div>
+  <div class="content">
+    ${htmlContent}
+  </div>
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    }
+  <\/script>
+</body>
+</html>
+                                    `);
+                                    printWindow.document.close();
+                                  }}
+                                  className="px-3 py-1.5 rounded bg-slate-900 border border-slate-800 text-slate-300 hover:text-white font-bold transition flex items-center gap-1.5"
+                                  title="In / Lưu PDF"
+                                >
+                                  <Printer className="w-3.5 h-3.5 text-indigo-400" />
+                                  <span>In / Lưu PDF</span>
+                                </button>
+                                <button 
+                                  onClick={() => alert("Hệ thống đã tự động sao lưu báo cáo của bạn vào LocalStorage!")}
+                                  className="px-3.5 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold transition"
+                                >
+                                  Lưu báo cáo
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    ) : (
+                      <div className="bg-[#0b1120] border border-slate-800/90 rounded-xl p-8 text-center text-slate-500 text-xs italic flex flex-col items-center justify-center min-h-[400px]">
+                        <FolderPlus className="w-12 h-12 text-slate-700 mb-3" />
+                        <span>Chưa chọn đợt tuyển dụng hoặc cơ sở dữ liệu trống.</span>
+                        <span className="text-[10px] text-slate-650 mt-1">
+                          Hãy chọn một đợt tuyển dụng hiện có hoặc tạo đợt mới ở danh sách bên trái.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+
+          </main>
+
+          <footer className="w-full border-t border-slate-800 bg-[#060910] px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500 mt-10">
+            <div className="flex items-center gap-2"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span>Hệ thống chấm điểm trực tuyến (Gemini AI - Cao Đẳng Việt Mỹ)</span></div>
+            <div className="flex items-center gap-4">
+              <span className="font-mono flex items-center gap-1"><Clock /> {currentTime || 'Đang đồng bộ...'}</span>
+              <span>|</span>
+              <span>Phát triển bởi Antigravity AI</span>
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
